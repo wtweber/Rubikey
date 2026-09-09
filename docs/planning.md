@@ -17,6 +17,7 @@
 * Custom special characters
 * Custom number of uppercase / lowercase / special characters
 * Forced capitalization of letters / numbers (password requirement stuff)
+* Time out of the application if user makes no input for x amount of time
 
 ## Collaboration
 * Daily updates to eachother for the work / progress we are doing
