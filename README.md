@@ -1,9 +1,7 @@
 # Rubikey
-Text based password manager built in Ruby.
+Text based local password manager built in Ruby allowing for secure password generation and storage.
 
 * https://github.com/wtweberAggie/Rubikey/tree/main
-
-## Why you should use `Rubikey`
 
 ## How to install bcrypt
 
@@ -12,6 +10,12 @@ Text based password manager built in Ruby.
 ## How to run tests for `Rubikey`
 
 ## `Rubikey` features
+* Store Password
+* Retrieve password
+* Search for passwords
+* Generate password
+* Set master password
+* Change master password
 
 ## Limitations
 
