@@ -7,6 +7,7 @@ Navigator: Will
 
 Work completed:
 - Draft for planning document (could change later as we work on it)
+- Draft for user stories (made 10, 2 are sad-path)
 
 Notes:
 - 
