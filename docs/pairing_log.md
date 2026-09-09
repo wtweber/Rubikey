@@ -6,7 +6,7 @@ Driver: Caleb
 Navigator: Will  
 
 Work completed:
-- 
+- Draft for planning document (could change later as we work on it)
 
 Notes:
 - 
