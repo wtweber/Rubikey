@@ -3,7 +3,7 @@ Text based local password manager built in Ruby allowing for secure password gen
 
 * https://github.com/wtweberAggie/Rubikey/tree/main
 
-## How to install bcrypt
+## How to install `Rubikey`
 
 ## How to use `Rubikey`
 
