@@ -11,6 +11,7 @@ Text based local password manager built in Ruby allowing for secure password gen
 
 ## How to run tests for `Rubikey`
 * bundle exec rspec
+* also comes with coverage file in coverage/index.html
 
 ## `Rubikey` features
 * Store Password
