@@ -4,10 +4,13 @@ Text based local password manager built in Ruby allowing for secure password gen
 * https://github.com/wtweberAggie/Rubikey/tree/main
 
 ## How to install `Rubikey`
+* bundle install
 
 ## How to use `Rubikey`
+* bundle exec ruby bin/rubikey
 
 ## How to run tests for `Rubikey`
+* bundle exec rspec
 
 ## `Rubikey` features
 * Store Password

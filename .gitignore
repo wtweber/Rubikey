@@ -1,0 +1,28 @@
+# SimpleCov output
+/coverage/
+
+# Bundler and local dependencies
+/.bundle/
+/vendor/bundle/
+
+# Runtime and temporary files
+/tmp/
+/log/
+*.log
+*.tmp
+
+# Local password-manager data and secrets
+*.db
+*.sqlite
+*.sqlite3
+.env
+.env.*
+!.env.example
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+/.idea/
+/.vscode/
