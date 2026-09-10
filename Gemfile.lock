@@ -17,9 +17,11 @@ GEM
       rspec-support (~> 3.13.0)
     rspec-support (3.13.7)
     simplecov (1.2.0)
+    sqlite3 (2.9.6-arm64-darwin)
     sqlite3 (2.9.6-x64-mingw-ucrt)
 
 PLATFORMS
+  arm64-darwin-23
   x64-mingw-ucrt
 
 DEPENDENCIES
@@ -38,6 +40,7 @@ CHECKSUMS
   rspec-mocks (3.13.8) sha256=086ad3d3d17533f4237643de0b5c42f04b66348c28bf6b9c2d3f4a3b01af1d47
   rspec-support (3.13.7) sha256=0640e5570872aafefd79867901deeeeb40b0c9875a36b983d85f54fb7381c47c
   simplecov (1.2.0) sha256=ea6acd05eece5a41990e2a5171c57d15700d329326c7666c85ee8c6a0dd0977e
+  sqlite3 (2.9.6-arm64-darwin) sha256=849b5d7f795e60fe25076d62c72dd722beb45b3850b516ad978d60ee848ec15b
   sqlite3 (2.9.6-x64-mingw-ucrt) sha256=1f2b88f417fd0a8c1d5ef19c7e817d8b9c61bee6e33b6b36255fb6e40148e6f8
 
 BUNDLED WITH
