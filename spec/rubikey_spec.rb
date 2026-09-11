@@ -18,7 +18,7 @@ RSpec.describe Rubikey do
         expect(@password.website).to eq('www.google.com')
       end
       it 'should set user name' do
-        expect(@password.user_name).to eq('userName')
+        expect(@password.username).to eq('userName')
       end
       it 'should set password' do
         expect(@password.password).to eq('password')
