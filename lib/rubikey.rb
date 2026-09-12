@@ -1,6 +1,19 @@
+# Modules
+require_relative "rubikey/terminal"
+require_relative "rubikey/vars"
+
 module Rubikey
 	def self.hello
 		puts "Hello, world!"
+	end
+	def self.run
+		Terminal.output("#{TextColor::YELLOW}Welcome to #{TextColor::RED + TextColor::BOLD}Rubikey.")
+
+		master_password = Terminal.password_prompt("Enter your master password:")
+		
+		Terminal.output("Received")
+		# TODO: Check whether master password already exists.
+		# TODO: Create the master password if it does not exist.
 	end
 end
 
@@ -23,3 +36,5 @@ end
 
 class Master_Password
 end
+
+Rubikey.run
