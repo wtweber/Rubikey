@@ -7,14 +7,31 @@ module Rubikey
 		puts "Hello, world!"
 	end
 	def self.run
-		Terminal.output("#{TextColor::YELLOW}Welcome to #{TextColor::RED + TextColor::BOLD}Rubikey.")
-
-		master_password = Terminal.password_prompt("Enter your master password:")
+		Terminal.output(
+			TextColor::BOLD + "//////////////////////////////////////////////////////////\n", 
+			TextColor::GREEN + "                   Welcome to ",
+			TextColor::RED + TextColor::BOLD + "Rubikey.\n",
+			TextColor::BOLD + "//////////////////////////////////////////////////////////\n"
+		)
 		
-		Terminal.output("Received")
+		self.first_timer
 		# TODO: Check whether master password already exists.
 		# TODO: Create the master password if it does not exist.
 	end
+	def self.first_timer
+		Terminal.output(
+			TextColor::GREEN + "This is the first time you have used this application.\n",
+			TextColor::GREEN + "In order to secure your passwords, we require that you create a ",
+			TextColor::YELLOW + TextColor::BOLD + "master password.", "\n",
+		)
+		master_password = Terminal.password_prompt(
+			TextColor::GREEN + "Create a new ",
+			TextColor::YELLOW + TextColor::BOLD + "master password:"
+		)
+		
+		Terminal.output("Received.")
+	end
+
 end
 
 class Password_Manager
