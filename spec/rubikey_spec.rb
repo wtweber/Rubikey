@@ -7,6 +7,16 @@ RSpec.describe Rubikey do
     end
   end
 
+  describe ".run" do
+    it "displays the welcome message" do
+        allow(Rubikey).to receive(:first_timer)
+
+        expect { Rubikey.run }.to output(
+          a_string_including("Welcome to ", "Rubikey.")
+        ).to_stdout
+    end
+  end
+  
   describe 'Password' do
     it 'should be defined' do
       expect { Password }.not_to raise_error
