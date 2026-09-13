@@ -1,18 +1,19 @@
 # frozen_string_literal: true
 
-source "https://rubygems.org"
+source 'https://rubygems.org'
 
-gem "sqlite3"
-gem "bcrypt"
-gem 'openssl'
 gem 'base64'
+gem 'bcrypt'
 gem 'json'
+gem 'openssl'
+gem 'sqlite3'
 
 group :test do
-	gem "rspec"
-	gem "simplecov"
+  gem 'rspec'
+  gem 'simplecov'
 end
 
 group :development do
-	gem "rake"
+  gem 'rake'
+  gem 'rubocop'
 end
