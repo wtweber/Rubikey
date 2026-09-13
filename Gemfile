@@ -3,6 +3,10 @@
 source "https://rubygems.org"
 
 gem "sqlite3"
+gem "bcrypt"
+gem 'openssl'
+gem 'base64'
+gem 'json'
 
 group :test do
 	gem "rspec"
