@@ -1,7 +1,7 @@
 # Modules
 require_relative "rubikey/terminal"
 require_relative "rubikey/vars"
-require 'bcrypt'
+#require 'bcrypt'
 require 'openssl'
 require 'base64'
 require 'json'
@@ -76,6 +76,7 @@ class Password
 end
 
 class Master_Password
+	attr_reader :password
 end
 
 class PasswordCipher
