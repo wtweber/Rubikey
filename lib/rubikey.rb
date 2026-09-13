@@ -66,7 +66,7 @@ class Password
 	end
 
 	def update_password(new_password, master_password)
-		raise ArgumentError, 'Password can not be empty' if password.empty?
+		raise ArgumentError, 'Password can not be empty' if new_password.empty?
 		@enc_password = PasswordCipher.encrypt(new_password, master_password)
 	end
 

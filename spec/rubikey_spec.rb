@@ -34,7 +34,7 @@ RSpec.describe Rubikey do
         expect(@password.get_password('masterpassword')).to eq('password')
       end
       it 'should be able to change password' do
-        @password.update_password('newPassword')
+        @password.update_password('newPassword', 'masterpassword')
         expect(@password.get_password('masterpassword')).to eq('newPassword')
       end
     end
