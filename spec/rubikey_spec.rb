@@ -23,7 +23,7 @@ RSpec.describe Rubikey do
     end
 
     describe 'getters and setters' do
-      before(:each)  { @password = Password.new('www.google.com', 'userName', 'password') }
+      before(:each)  { @password = Password.new('www.google.com', 'userName', 'password', 'masterpassword') }
       it 'should set website' do
         expect(@password.website).to eq('www.google.com')
       end
@@ -31,11 +31,11 @@ RSpec.describe Rubikey do
         expect(@password.username).to eq('userName')
       end
       it 'should set password' do
-        expect(@password.password).to eq('password')
+        expect(@password.get_password('masterpassword')).to eq('password')
       end
       it 'should be able to change password' do
-        @password.password = 'newPassword'
-        expect(@password.password).to eq('newPassword')
+        @password.update_password('newPassword')
+        expect(@password.get_password('masterpassword')).to eq('newPassword')
       end
     end
 
