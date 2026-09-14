@@ -25,4 +25,5 @@ Work completed:
 - second_timer exits the program on second failed attempt.
 - Created main menu for the application
 - Created tests for the userinterface
+- Updated backlog for current project status.
 
