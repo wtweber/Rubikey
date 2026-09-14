@@ -23,3 +23,6 @@ Work completed:
 - Created loop in first timer to handle when non matching passwords were input
 - Created second_timer function to ask for the master password when the app detects one has already been set
 - second_timer exits the program on second failed attempt.
+- Created main menu for the application
+- Created tests for the userinterface
+
