@@ -22,8 +22,8 @@ module Rubikey
     # TODO: Check whether master password already exists. 
     # TODO: Create the master password if it does not exist.
 
-    if MasterPassword.set?
-      Terminal.output('You have a master password!')
+    password_manager = if MasterPassword.set?
+      second_timer
     else
       first_timer
     end
@@ -44,14 +44,22 @@ module Rubikey
     )
 
     if master_password == master_password_confirm
-      PasswordManager.new(master_password, true)
+      return PasswordManager.new(master_password, true)
     else
       return
     end
+  end
 
-    Terminal.output('Received.')
+  def self.second_timer
+    master_password = Terminal.password_prompt(
+      TextColor::GREEN + 'Enter your ',
+      TextColor::YELLOW + TextColor::BOLD + 'master password:'
+    )
+    return PasswordManager.new(master_password)
   end
 end
+
+
 
 class PasswordManager
   attr_reader :master_password, :passwords
