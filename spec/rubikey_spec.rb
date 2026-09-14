@@ -16,6 +16,51 @@ RSpec.describe Rubikey do
         ).to_stdout
     end
   end
+
+  describe ".first_timer" do
+    before do
+      File.delete("mp.hash") if File.exist?("mp.hash")
+    end
+
+    after do
+      File.delete("mp.hash") if File.exist?("mp.hash")
+    end
+
+    it "creates a master password when one does not exist" do
+      allow(Rubikey::Terminal).to receive(:password_prompt).and_return("masterPassword", "masterPassword")
+
+      Rubikey.first_timer
+
+      expect(File).to exist("mp.hash")
+      expect(MasterPassword.set?).to be true
+    end
+
+    it "creates a master password that can be used to authenticate" do
+      allow(Rubikey::Terminal).to receive(:password_prompt).and_return("masterPassword","masterPassword")
+
+      Rubikey.first_timer
+      expect { MasterPassword.new("masterPassword") }.not_to raise_error
+    end
+
+    it "asks for the password again when the passwords do not match" do
+      allow(Rubikey::Terminal).to receive(:password_prompt).and_return(
+        "masterPassword",
+        "wrongPassword",
+        "masterPassword",
+        "masterPassword"
+      )
+
+      expect {
+        Rubikey.first_timer
+      }.to output(
+        a_string_including("Passwords do not match. Please try again.")
+      ).to_stdout
+
+      Rubikey.first_timer
+
+      expect(MasterPassword.set?).to be true
+    end
+  end
   
   describe 'Password' do
     it 'should be defined' do
