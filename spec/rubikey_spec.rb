@@ -58,12 +58,17 @@ RSpec.describe Rubikey do
     end
 
     describe 'getters and setters' do
-      before(:each)  { @master_password = Master_Password.new('masterPassword') }
+      before(:each)  { 
+        Master_Password.store('masterPassword')
+        @master_password = Master_Password.new('masterPassword') }
       it 'should set master password' do
         expect(@master_password.password).to eq('masterPassword')
       end
+      it 'should fail when incorrect password is input' do
+        expect {Master_Password.new('notTheMasterPassword')}.to raise_error(ArgumentError)
+      end
       it 'should be able to change master password' do
-        @master_password.password = 'newMasterPassword'
+        @master_password.update 'newMasterPassword'
         expect(@master_password.password).to eq('newMasterPassword')
       end
     end

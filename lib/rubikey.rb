@@ -88,7 +88,6 @@ class Master_Password
         mp_hash = BCrypt::Password.new(stored_hash)
         if  mp_hash == password
             @password = password
-            puts 'password check passed.'
         else
             raise ArgumentError, 'Master Password does not match.'
         end
