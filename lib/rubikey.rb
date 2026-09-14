@@ -19,10 +19,14 @@ module Rubikey
       TextColor::BOLD + "//////////////////////////////////////////////////////////\n"
     )
 
-    
-    first_timer
-    # TODO: Check whether master password already exists.
+    # TODO: Check whether master password already exists. 
     # TODO: Create the master password if it does not exist.
+
+    if MasterPassword.set?
+      Terminal.output('You have a master password!')
+    else
+      first_timer
+    end
   end
 
   def self.first_timer
