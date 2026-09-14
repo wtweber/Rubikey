@@ -21,5 +21,9 @@ module Rubikey
       print ' '
       $stdin.noecho(&:gets).chomp
     end
+
+    def self.clear
+      puts "\e[H\e[2J"
+    end
   end
 end

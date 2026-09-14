@@ -7,9 +7,7 @@ require 'base64'
 require 'json'
 
 module Rubikey
-  def self.hello
-    puts 'Hello, world!'
-  end
+  @password_manager
 
   def self.run
     Terminal.output(
@@ -22,11 +20,12 @@ module Rubikey
     # TODO: Check whether master password already exists. 
     # TODO: Create the master password if it does not exist.
 
-    password_manager = if MasterPassword.set?
+    @password_manager = if MasterPassword.set?
       second_timer
     else
       first_timer
     end
+    main_menu
   end
 
   def self.first_timer
@@ -83,6 +82,19 @@ module Rubikey
       end
     end
   end
+
+  def self.main_menu
+    Terminal.clear
+    selected_option = Terminal.prompt(
+        TextColor::GREEN + "\nMain menu\n",
+        TextColor::GREEN + "1. New password\n",
+        TextColor::GREEN + "2. Show passwords\n",
+        TextColor::GREEN + "3. Search\n",
+        TextColor::GREEN + "4. Options\n\n",
+        TextColor::YELLOW + TextColor::BOLD + 'Select an option: '
+      )
+  end
+
 end
 
 
