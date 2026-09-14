@@ -1,158 +1,157 @@
 # Modules
-require_relative "rubikey/terminal"
-require_relative "rubikey/vars"
+require_relative 'rubikey/terminal'
+require_relative 'rubikey/vars'
 require 'bcrypt'
 require 'openssl'
 require 'base64'
 require 'json'
 
-
 module Rubikey
-	def self.hello
-		puts "Hello, world!"
-	end
-	def self.run
-		Terminal.output(
-			TextColor::BOLD + "//////////////////////////////////////////////////////////\n", 
-			TextColor::GREEN + "                   Welcome to ",
-			TextColor::RED + TextColor::BOLD + "Rubikey.\n",
-			TextColor::BOLD + "//////////////////////////////////////////////////////////\n"
-		)
-		
-		self.first_timer
-		# TODO: Check whether master password already exists.
-		# TODO: Create the master password if it does not exist.
-	end
-	def self.first_timer
-		Terminal.output(
-			TextColor::GREEN + "This is the first time you have used this application.\n",
-			TextColor::GREEN + "In order to secure your passwords, we require that you create a ",
-			TextColor::YELLOW + TextColor::BOLD + "master password.", "\n",
-		)
-		master_password = Terminal.password_prompt(
-			TextColor::GREEN + "Create a new ",
-			TextColor::YELLOW + TextColor::BOLD + "master password:"
-		)
-		
-		Terminal.output("Received.")
-	end
+  def self.hello
+    puts 'Hello, world!'
+  end
 
+  def self.run
+    Terminal.output(
+      TextColor::BOLD + "//////////////////////////////////////////////////////////\n",
+      TextColor::GREEN + '                   Welcome to ',
+      TextColor::RED + TextColor::BOLD + "Rubikey.\n",
+      TextColor::BOLD + "//////////////////////////////////////////////////////////\n"
+    )
+
+    first_timer
+    # TODO: Check whether master password already exists.
+    # TODO: Create the master password if it does not exist.
+  end
+
+  def self.first_timer
+    Terminal.output(
+      TextColor::GREEN + "This is the first time you have used this application.\n",
+      TextColor::GREEN + 'In order to secure your passwords, we require that you create a ',
+      TextColor::YELLOW + TextColor::BOLD + 'master password.', "\n"
+    )
+    Terminal.password_prompt(
+      TextColor::GREEN + 'Create a new ',
+      TextColor::YELLOW + TextColor::BOLD + 'master password:'
+    )
+
+    Terminal.output('Received.')
+  end
 end
 
-class Password_Manager
+class PasswordManager
 end
 
 class Password
-	attr_reader :website, :username, :enc_password
+  attr_reader :website, :username, :enc_password
 
-	def initialize(website, username, password, master_password)
-       raise ArgumentError, 'Website can not be empty' if website.empty?
-       raise ArgumentError, 'Username can not be empty' if username.empty?
-       raise ArgumentError, 'Password can not be empty' if password.empty?
+  def initialize(website, username, password, master_password)
+    raise ArgumentError, 'Website can not be empty' if website.empty?
+    raise ArgumentError, 'Username can not be empty' if username.empty?
+    raise ArgumentError, 'Password can not be empty' if password.empty?
 
-       @website = website
-       @username = username
-	   @enc_password = PasswordCipher.encrypt(password, master_password)
-	end
+    @website = website
+    @username = username
+    @enc_password = PasswordCipher.encrypt(password, master_password)
+  end
 
-	def website=(newWebsite)
-		raise ArgumentError, 'Website can not be empty' if website.empty?
-		@website = newWebsite
-	end
+  def website=(new_website)
+    raise ArgumentError, 'Website can not be empty' if new_website.empty?
 
-	def username=(newusername)
-		raise ArgumentError, 'Username can not be empty' if username.empty?
-		@username = newusername
-	end
+    @website = new_website
+  end
 
-	def update_password(new_password, master_password)
-		raise ArgumentError, 'Password can not be empty' if new_password.empty?
-		@enc_password = PasswordCipher.encrypt(new_password, master_password)
-	end
+  def username=(new_username)
+    raise ArgumentError, 'Username can not be empty' if new_username.empty?
 
-	def get_password(master_password)
-		PasswordCipher.decrypt(@enc_password, master_password)
-	end
+    @username = newusername
+  end
+
+  def update_password(new_password, master_password)
+    raise ArgumentError, 'Password can not be empty' if new_password.empty?
+
+    @enc_password = PasswordCipher.encrypt(new_password, master_password)
+  end
+
+  def get_password(master_password)
+    PasswordCipher.decrypt(@enc_password, master_password)
+  end
 end
 
-class Master_Password
-	attr_reader :password
+class MasterPassword
+  attr_reader :password
 
-    def initialize(password)
-        begin
-            stored_hash = File.read('mp.hash')
-        rescue => error
-            raise ArgumentError, 'Master Password has not been set.'
-        end
-
-        mp_hash = BCrypt::Password.new(stored_hash)
-        if  mp_hash == password
-            @password = password
-        else
-            raise ArgumentError, 'Master Password does not match.'
-        end
+  def initialize(password)
+    begin
+      stored_hash = File.read('mp.hash')
+    rescue StandardError
+      raise ArgumentError, 'Master Password has not been set.'
     end
+    raise ArgumentError, 'Master Password does not match.' unless BCrypt::Password.new(stored_hash) == password
 
-    def update(newPassword)
-        #TODO: update the master password and reencrypt all saved passwords.
-    end
+    @password = password
+  end
 
-    def self.store(password)
-        File.write('mp.hash', BCrypt::Password.create(password))
-    end
+  def update(new_password)
+    # TODO: update the master password and reencrypt all saved passwords.
+  end
 
-    def self.set?
-        File.exist?('mp.hash')
-    end
+  def self.store(password)
+    File.write('mp.hash', BCrypt::Password.create(password))
+  end
+
+  def self.set?
+    File.exist?('mp.hash')
+  end
 end
 
 class PasswordCipher
-	Cipher_Name = 'aes-256-cbc'
-	def self.encrypt(text, password)
-		cipher = OpenSSL::Cipher.new Cipher_Name
-		cipher.encrypt
-        
-        iv = cipher.random_iv
-		salt = OpenSSL::Random.random_bytes 16
-		iter = 20000
-		key_len = cipher.key_len
-		digest = OpenSSL::Digest.new('SHA256')
+  CIPHER_NAME = 'aes-256-cbc'.freeze
+  def self.encrypt(text, password)
+    cipher = OpenSSL::Cipher.new CIPHER_NAME
+    cipher.encrypt
 
-		key = OpenSSL::PKCS5.pbkdf2_hmac(password, salt, iter, key_len, digest)
-		cipher.key = key
+    iv = cipher.random_iv
+    salt = OpenSSL::Random.random_bytes 16
+    iter = 20_000
+    key_len = cipher.key_len
+    digest = OpenSSL::Digest.new('SHA256')
 
-		encrypted = cipher.update text
-        encrypted << cipher.final
+    key = OpenSSL::PKCS5.pbkdf2_hmac(password, salt, iter, key_len, digest)
+    cipher.key = key
 
-		payload = {
-			salt: Base64.strict_encode64(salt),
-			iv: Base64.strict_encode64(iv),
-			data: Base64.strict_encode64(encrypted)
-		}
+    encrypted = cipher.update text
+    encrypted << cipher.final
 
-		Base64.strict_encode64(payload.to_json)
-	end
+    payload = {
+      salt: Base64.strict_encode64(salt),
+      iv: Base64.strict_encode64(iv),
+      data: Base64.strict_encode64(encrypted)
+    }
 
-    def self.decrypt(encrypted_payload, password)
-        decoded_json = Base64.strict_decode64(encrypted_payload)
-        payload = JSON.parse(decoded_json, symbolize_names: true)
+    Base64.strict_encode64(payload.to_json)
+  end
 
-        salt = Base64.strict_decode64(payload[:salt])
-        iv = Base64.strict_decode64(payload[:iv])
-        enc_data = Base64.strict_decode64(payload[:data])
+  def self.decrypt(encrypted_payload, password)
+    decoded_json = Base64.strict_decode64(encrypted_payload)
+    payload = JSON.parse(decoded_json, symbolize_names: true)
 
-        cipher = OpenSSL::Cipher.new Cipher_Name
-        cipher.decrypt
-        cipher.iv = iv
+    salt = Base64.strict_decode64(payload[:salt])
+    iv = Base64.strict_decode64(payload[:iv])
+    enc_data = Base64.strict_decode64(payload[:data])
 
-        iter = 20000
-        key_len = cipher.key_len
-        digest = OpenSSL::Digest.new('SHA256')
+    cipher = OpenSSL::Cipher.new CIPHER_NAME
+    cipher.decrypt
+    cipher.iv = iv
 
-        key = OpenSSL::PKCS5.pbkdf2_hmac(password, salt, iter, key_len, digest)
-        cipher.key = key
+    iter = 20_000
+    key_len = cipher.key_len
+    digest = OpenSSL::Digest.new('SHA256')
 
-        decrypted = cipher.update enc_data
-        decrypted << cipher.final
-    end
+    key = OpenSSL::PKCS5.pbkdf2_hmac(password, salt, iter, key_len, digest)
+    cipher.key = key
+
+    decrypted = cipher.update enc_data
+    decrypted << cipher.final
+  end
 end

@@ -52,20 +52,20 @@ RSpec.describe Rubikey do
     end
   end
 
-  describe 'Master_Password' do
+  describe 'MasterPassword' do
     it 'should be defined' do
-      expect { Master_Password }.not_to raise_error
+      expect { MasterPassword }.not_to raise_error
     end
 
     describe 'getters and setters' do
       before(:each)  { 
-        Master_Password.store('masterPassword')
-        @master_password = Master_Password.new('masterPassword') }
+        MasterPassword.store('masterPassword')
+        @master_password = MasterPassword.new('masterPassword') }
       it 'should set master password' do
         expect(@master_password.password).to eq('masterPassword')
       end
       it 'should fail when incorrect password is input' do
-        expect {Master_Password.new('notTheMasterPassword')}.to raise_error(ArgumentError)
+        expect {MasterPassword.new('notTheMasterPassword')}.to raise_error(ArgumentError)
       end
       it 'should be able to change master password' do
         @master_password.update 'newMasterPassword'
@@ -75,18 +75,18 @@ RSpec.describe Rubikey do
 
     describe 'constructor' do
       it 'should reject invalid master password' do
-        expect { Master_Password.new('') }.to raise_error(ArgumentError)
+        expect { MasterPassword.new('') }.to raise_error(ArgumentError)
       end
     end
   end
 
-  describe 'Password_Manager' do
+  describe 'PasswordManager' do
     it 'should be defined' do
-      expect { Password_Manager }.not_to raise_error
+      expect { PasswordManager }.not_to raise_error
     end
 
     describe 'Passwords' do
-      before(:each)  { @password_manager = Password_Manager.new }
+      before(:each)  { @password_manager = PasswordManager.new }
       it 'should be able to add a password' do
         password = Password.new('www.google.com', 'userName', 'password')
         @password_manager.add_password(password)
@@ -101,7 +101,7 @@ RSpec.describe Rubikey do
       it 'should be able to retrieve a password from the database' do
         password = Password.new('www.google.com', 'userName', 'password')
         @password_manager.add_password(password)
-        @password_manager = Password_Manager.new
+        @password_manager = PasswordManager.new
         retrieved_password = @password_manager.retrieve_password('www.google.com')
         expect(retrieved_password).to eq(password)
       end
