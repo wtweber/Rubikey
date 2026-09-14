@@ -18,7 +18,7 @@
 .env
 .env.*
 !.env.example
-
+mp.hash
 
 # OS and editor files
 .DS_Store

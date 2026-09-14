@@ -69,13 +69,16 @@ module Rubikey
       return PasswordManager.new(master_password)
     rescue
       master_password = Terminal.password_prompt(
-        TextColor::RED + "\nIncorect Password. Please try again ",
+        TextColor::RED + "Incorrect Password. Please try again...\n\n",
         TextColor::GREEN + 'Enter your ',
         TextColor::YELLOW + TextColor::BOLD + 'master password:'
       )
       begin
         return PasswordManager.new(master_password)
       rescue
+        Terminal.output(
+          TextColor::RED + "Too many failed attempts, exiting Rubikey."
+        )
         return
       end
     end
