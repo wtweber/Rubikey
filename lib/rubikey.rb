@@ -131,4 +131,3 @@ class MasterPassword
     File.exist?('mp.hash')
   end
 end
-

@@ -88,7 +88,7 @@ RSpec.describe Rubikey do
         'wrongPassword'
       )
       allow(Rubikey).to receive(:exit)
-      
+
       expect { Rubikey.second_timer }.to output(
         a_string_including('Too many failed attempts')
       ).to_stdout

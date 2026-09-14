@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 
 class Password
   attr_reader :website, :username, :enc_password
