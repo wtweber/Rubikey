@@ -156,7 +156,4 @@ class PasswordCipher
         decrypted = cipher.update enc_data
         decrypted << cipher.final
     end
-
 end
-
-Rubikey.run

@@ -1,8 +1,23 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    ast (2.4.3)
+    base64 (0.3.0)
+    bcrypt (3.1.22)
     diff-lcs (1.6.2)
+    json (2.21.2)
+    language_server-protocol (3.17.0.6)
+    lint_roller (1.1.0)
+    openssl (4.0.2)
+    parallel (2.1.0)
+    parser (3.3.12.0)
+      ast (~> 2.4.1)
+      racc
+    prism (1.9.0)
+    racc (1.8.1)
+    rainbow (3.1.1)
     rake (13.4.2)
+    regexp_parser (2.12.0)
     rspec (3.13.2)
       rspec-core (~> 3.13.0)
       rspec-expectations (~> 3.13.0)
@@ -16,32 +31,73 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
     rspec-support (3.13.7)
+    rubocop (1.90.0)
+      json (>= 2.3)
+      language_server-protocol (~> 3.17.0.2)
+      lint_roller (~> 1.1.0)
+      parallel (>= 1.10)
+      parser (>= 3.3.0.2)
+      rainbow (>= 2.2.2, < 4.0)
+      regexp_parser (>= 2.9.3, < 3.0)
+      rubocop-ast (>= 1.49.0, < 2.0)
+      ruby-progressbar (~> 1.7)
+      unicode-display_width (>= 2.4.0, < 4.0)
+    rubocop-ast (1.50.0)
+      parser (>= 3.3.7.2)
+      prism (~> 1.7)
+    ruby-progressbar (1.13.0)
     simplecov (1.2.0)
     sqlite3 (2.9.6-arm64-darwin)
     sqlite3 (2.9.6-x64-mingw-ucrt)
+    unicode-display_width (3.2.0)
+      unicode-emoji (~> 4.1)
+    unicode-emoji (4.2.0)
 
 PLATFORMS
   arm64-darwin-23
   x64-mingw-ucrt
 
 DEPENDENCIES
+  base64
+  bcrypt
+  json
+  openssl
   rake
   rspec
+  rubocop
   simplecov
   sqlite3
 
 CHECKSUMS
+  ast (2.4.3)
+  base64 (0.3.0) sha256=27337aeabad6ffae05c265c450490628ef3ebd4b67be58257393227588f5a97b
+  bcrypt (3.1.22) sha256=1f0072e88c2d705d94aff7f2c5cb02eb3f1ec4b8368671e19112527489f29032
   bundler (4.0.19) sha256=b48056e4c77fb3853cc47775b5447ede44aaa4f53c32f168014ab4fe86587d47
   diff-lcs (1.6.2) sha256=9ae0d2cba7d4df3075fe8cd8602a8604993efc0dfa934cff568969efb1909962
+  json (2.21.2) sha256=1f1d3b7cf2b3ba1a69beca0bb6db13d5438b80bff3cd54cdaaa620b9b07c1c6a
+  language_server-protocol (3.17.0.6)
+  lint_roller (1.1.0)
+  openssl (4.0.2) sha256=1037ad2868ae58df9ad917891c0c0f9815a1172f6846d4bcdd508e4c2ee747c2
+  parallel (2.1.0)
+  parser (3.3.12.0)
+  prism (1.9.0)
+  racc (1.8.1)
+  rainbow (3.1.1)
   rake (13.4.2) sha256=cb825b2bd5f1f8e91ca37bddb4b9aaf345551b4731da62949be002fa89283701
+  regexp_parser (2.12.0)
   rspec (3.13.2) sha256=206284a08ad798e61f86d7ca3e376718d52c0bc944626b2349266f239f820587
   rspec-core (3.13.6) sha256=a8823c6411667b60a8bca135364351dda34cd55e44ff94c4be4633b37d828b2d
   rspec-expectations (3.13.5) sha256=33a4d3a1d95060aea4c94e9f237030a8f9eae5615e9bd85718fe3a09e4b58836
   rspec-mocks (3.13.8) sha256=086ad3d3d17533f4237643de0b5c42f04b66348c28bf6b9c2d3f4a3b01af1d47
   rspec-support (3.13.7) sha256=0640e5570872aafefd79867901deeeeb40b0c9875a36b983d85f54fb7381c47c
+  rubocop (1.90.0)
+  rubocop-ast (1.50.0)
+  ruby-progressbar (1.13.0)
   simplecov (1.2.0) sha256=ea6acd05eece5a41990e2a5171c57d15700d329326c7666c85ee8c6a0dd0977e
   sqlite3 (2.9.6-arm64-darwin) sha256=849b5d7f795e60fe25076d62c72dd722beb45b3850b516ad978d60ee848ec15b
   sqlite3 (2.9.6-x64-mingw-ucrt) sha256=1f2b88f417fd0a8c1d5ef19c7e817d8b9c61bee6e33b6b36255fb6e40148e6f8
+  unicode-display_width (3.2.0)
+  unicode-emoji (4.2.0)
 
 BUNDLED WITH
   4.0.19
