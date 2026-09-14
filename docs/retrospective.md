@@ -1,4 +1,9 @@
 ## Retrospective
+
+## Mid-Project Retrospective
+
+## End-Project Retrospective
+
 The retrospective discussion should address:
 
 * What went well

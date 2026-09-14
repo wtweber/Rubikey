@@ -19,6 +19,7 @@ module Rubikey
       TextColor::BOLD + "//////////////////////////////////////////////////////////\n"
     )
 
+    
     first_timer
     # TODO: Check whether master password already exists.
     # TODO: Create the master password if it does not exist.
