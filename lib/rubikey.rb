@@ -65,7 +65,20 @@ module Rubikey
       TextColor::GREEN + 'Enter your ',
       TextColor::YELLOW + TextColor::BOLD + 'master password:'
     )
-    return PasswordManager.new(master_password)
+    begin
+      return PasswordManager.new(master_password)
+    rescue
+      master_password = Terminal.password_prompt(
+        TextColor::RED + "\nIncorect Password. Please try again ",
+        TextColor::GREEN + 'Enter your ',
+        TextColor::YELLOW + TextColor::BOLD + 'master password:'
+      )
+      begin
+        return PasswordManager.new(master_password)
+      rescue
+        return
+      end
+    end
   end
 end
 
