@@ -1,7 +1,7 @@
 # Modules
 require_relative "rubikey/terminal"
 require_relative "rubikey/vars"
-#require 'bcrypt'
+require 'bcrypt'
 require 'openssl'
 require 'base64'
 require 'json'
@@ -77,6 +77,34 @@ end
 
 class Master_Password
 	attr_reader :password
+
+    def initialize(password)
+        begin
+            stored_hash = File.read('mp.hash')
+        rescue => error
+            raise ArgumentError, 'Master Password has not been set.'
+        end
+
+        mp_hash = BCrypt::Password.new(stored_hash)
+        if  mp_hash == password
+            @password = password
+            puts 'password check passed.'
+        else
+            raise ArgumentError, 'Master Password does not match.'
+        end
+    end
+
+    def update(newPassword)
+        #TODO: update the master password and reencrypt all saved passwords.
+    end
+
+    def self.store(password)
+        File.write('mp.hash', BCrypt::Password.create(password))
+    end
+
+    def self.set?
+        File.exist?('mp.hash')
+    end
 end
 
 class PasswordCipher
