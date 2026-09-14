@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 require 'openssl'
 require 'base64'
 require 'json'
 
 class PasswordCipher
-  CIPHER_NAME = 'aes-256-cbc'.freeze
+  CIPHER_NAME = 'aes-256-cbc'
   def self.encrypt(text, password)
     cipher = OpenSSL::Cipher.new CIPHER_NAME
     cipher.encrypt
@@ -51,5 +53,4 @@ class PasswordCipher
     decrypted = cipher.update enc_data
     decrypted << cipher.final
   end
-
 end
