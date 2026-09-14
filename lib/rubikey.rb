@@ -1,6 +1,9 @@
+# frozen_string_literal: true
+
 # Modules
 require_relative 'rubikey/terminal'
 require_relative 'rubikey/vars'
+require_relative 'rubikey/dialogue'
 require 'bcrypt'
 require 'openssl'
 require 'base64'
@@ -8,88 +11,51 @@ require 'json'
 
 module Rubikey
   def self.run
-    Terminal.output(
-      TextColor::BOLD + "//////////////////////////////////////////////////////////\n",
-      TextColor::GREEN + '                   Welcome to ',
-      TextColor::RED + TextColor::BOLD + "Rubikey.\n",
-      TextColor::BOLD + "//////////////////////////////////////////////////////////\n"
-    )
+    Terminal.output(*Dialogue.welcome_message)
 
-    # TODO: Check whether master password already exists.
-    # TODO: Create the master password if it does not exist.
+    @password_manager = MasterPassword.set? ? second_timer : first_timer
 
-    @password_manager = if MasterPassword.set?
-                          second_timer
-                        else
-                          first_timer
-                        end
     main_menu
   end
 
   def self.first_timer
-    master_password = nil
-    master_password_confirm = nil
+    Terminal.output(*Dialogue.first_time_message)
 
-    Terminal.output(
-      TextColor::GREEN + "This is the first time you have used this application.\n",
-      TextColor::GREEN + 'In order to secure your passwords, we require that you create a ',
-      TextColor::YELLOW + TextColor::BOLD + 'master password.', "\n"
-    )
-
-    loop do
-      master_password = Terminal.password_prompt(
-        TextColor::GREEN + 'Create a new ',
-        TextColor::YELLOW + TextColor::BOLD + 'master password:'
-      )
-      master_password_confirm = Terminal.password_prompt(
-        TextColor::GREEN + 'Confirm the new ',
-        TextColor::YELLOW + TextColor::BOLD + 'master password:'
-      )
-
-      break if master_password == master_password_confirm
-
-      Terminal.output(
-        TextColor::RED + "\nPasswords do not match. Please try again.\n"
-      )
-    end
+    master_password = first_time_loop
 
     PasswordManager.new(master_password, true)
   end
 
+  def self.first_time_loop
+    loop do
+      master_password = Terminal.password_prompt(*Dialogue.create_master_password_prompt)
+
+      master_password_confirm = Terminal.password_prompt(*Dialogue.confirm_master_password_prompt)
+
+      return master_password if master_password == master_password_confirm
+
+      Terminal.output(*Dialogue.passwords_do_not_match)
+    end
+  end
+
   def self.second_timer
-    master_password = Terminal.password_prompt(
-      TextColor::GREEN + 'Enter your ',
-      TextColor::YELLOW + TextColor::BOLD + 'master password:'
-    )
+    master_password = Terminal.password_prompt(*Dialogue.enter_master_password_prompt)
     begin
       PasswordManager.new(master_password)
     rescue StandardError
-      master_password = Terminal.password_prompt(
-        TextColor::RED + "Incorrect Password. Please try again...\n\n",
-        TextColor::GREEN + 'Enter your ',
-        TextColor::YELLOW + TextColor::BOLD + 'master password:'
-      )
+      master_password = Terminal.password_prompt(*Dialogue.incorrect_password_prompt)
       begin
         PasswordManager.new(master_password)
       rescue StandardError
-        Terminal.output(
-          TextColor::RED + 'Too many failed attempts, exiting Rubikey.'
-        )
-        nil
+        Terminal.output(*Dialogue.too_many_failed_attempts)
+        exit
       end
     end
   end
 
   def self.main_menu
     Terminal.clear
-    Terminal.prompt(
-      TextColor::GREEN + "\nMain menu\n",
-      TextColor::GREEN + "1. New password\n",
-      TextColor::GREEN + "2. Show passwords\n",
-      TextColor::GREEN + "3. Search\n",
-      TextColor::GREEN + "4. Options\n\n",
-      TextColor::YELLOW + TextColor::BOLD + 'Select an option: '
-    )
+    Terminal.prompt(*Dialogue.main_menu)
   end
 end
 
@@ -166,7 +132,7 @@ class MasterPassword
 end
 
 class PasswordCipher
-  CIPHER_NAME = 'aes-256-cbc'.freeze
+  CIPHER_NAME = 'aes-256-cbc'
   def self.encrypt(text, password)
     cipher = OpenSSL::Cipher.new CIPHER_NAME
     cipher.encrypt
