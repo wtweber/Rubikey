@@ -7,8 +7,6 @@ require 'base64'
 require 'json'
 
 module Rubikey
-  @password_manager
-
   def self.run
     Terminal.output(
       TextColor::BOLD + "//////////////////////////////////////////////////////////\n",
@@ -17,14 +15,14 @@ module Rubikey
       TextColor::BOLD + "//////////////////////////////////////////////////////////\n"
     )
 
-    # TODO: Check whether master password already exists. 
+    # TODO: Check whether master password already exists.
     # TODO: Create the master password if it does not exist.
 
     @password_manager = if MasterPassword.set?
-      second_timer
-    else
-      first_timer
-    end
+                          second_timer
+                        else
+                          first_timer
+                        end
     main_menu
   end
 
@@ -45,7 +43,7 @@ module Rubikey
       )
       master_password_confirm = Terminal.password_prompt(
         TextColor::GREEN + 'Confirm the new ',
-        TextColor::YELLOW + TextColor::BOLD + 'master password:',
+        TextColor::YELLOW + TextColor::BOLD + 'master password:'
       )
 
       break if master_password == master_password_confirm
@@ -55,7 +53,6 @@ module Rubikey
       )
     end
 
-  
     PasswordManager.new(master_password, true)
   end
 
@@ -65,39 +62,36 @@ module Rubikey
       TextColor::YELLOW + TextColor::BOLD + 'master password:'
     )
     begin
-      return PasswordManager.new(master_password)
-    rescue
+      PasswordManager.new(master_password)
+    rescue StandardError
       master_password = Terminal.password_prompt(
         TextColor::RED + "Incorrect Password. Please try again...\n\n",
         TextColor::GREEN + 'Enter your ',
         TextColor::YELLOW + TextColor::BOLD + 'master password:'
       )
       begin
-        return PasswordManager.new(master_password)
-      rescue
+        PasswordManager.new(master_password)
+      rescue StandardError
         Terminal.output(
-          TextColor::RED + "Too many failed attempts, exiting Rubikey."
+          TextColor::RED + 'Too many failed attempts, exiting Rubikey.'
         )
-        return
+        nil
       end
     end
   end
 
   def self.main_menu
     Terminal.clear
-    selected_option = Terminal.prompt(
-        TextColor::GREEN + "\nMain menu\n",
-        TextColor::GREEN + "1. New password\n",
-        TextColor::GREEN + "2. Show passwords\n",
-        TextColor::GREEN + "3. Search\n",
-        TextColor::GREEN + "4. Options\n\n",
-        TextColor::YELLOW + TextColor::BOLD + 'Select an option: '
-      )
+    Terminal.prompt(
+      TextColor::GREEN + "\nMain menu\n",
+      TextColor::GREEN + "1. New password\n",
+      TextColor::GREEN + "2. Show passwords\n",
+      TextColor::GREEN + "3. Search\n",
+      TextColor::GREEN + "4. Options\n\n",
+      TextColor::YELLOW + TextColor::BOLD + 'Select an option: '
+    )
   end
-
 end
-
-
 
 class PasswordManager
   attr_reader :master_password, :passwords
