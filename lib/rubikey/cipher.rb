@@ -52,5 +52,4 @@ class PasswordCipher
     decrypted << cipher.final
   end
 
-
 end
