@@ -5,7 +5,18 @@ require 'json'
 class PasswordCipher
   CIPHER_NAME = 'aes-256-cbc'.freeze
   def self.encrypt(text, password)
-    cipher = cipherEncrypt
+    cipher = OpenSSL::Cipher.new CIPHER_NAME
+    cipher.encrypt
+
+    iv = cipher.random_iv
+    salt = OpenSSL::Random.random_bytes 16
+    iter = 20_000
+    key_len = cipher.key_len
+    digest = OpenSSL::Digest.new('SHA256')
+
+    key = OpenSSL::PKCS5.pbkdf2_hmac(password, salt, iter, key_len, digest)
+    cipher.key = key
+
     encrypted = cipher.update text
     encrypted << cipher.final
 
@@ -41,17 +52,5 @@ class PasswordCipher
     decrypted << cipher.final
   end
 
-  def cipherEncrypt
-    cipher = OpenSSL::Cipher.new CIPHER_NAME
-    cipher.encrypt
 
-    iv = cipher.random_iv
-    salt = OpenSSL::Random.random_bytes 16
-    iter = 20_000
-    key_len = cipher.key_len
-    digest = OpenSSL::Digest.new('SHA256')
-
-    key = OpenSSL::PKCS5.pbkdf2_hmac(password, salt, iter, key_len, digest)
-    cipher.key = key
-  end
 end
