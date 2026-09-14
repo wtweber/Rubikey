@@ -1,23 +1,25 @@
+# frozen_string_literal: true
+
 # Modules
-require "io/console"
-require_relative "vars"
+require 'io/console'
+require_relative 'vars'
 
 module Rubikey
-    module Terminal
-        def self.output(*messages)
-            puts messages.map { |message| "#{message}#{TextColor::RESET}" }.join
-        end
-
-        def self.prompt(*messages)
-            print messages.map { |message| "#{message}#{TextColor::RESET}" }.join
-            print " "
-            gets.chomp
-        end
-
-        def self.password_prompt(*messages)
-            print messages.map { |message| "#{message}#{TextColor::RESET}" }.join
-            print " "
-            STDIN.noecho(&:gets).chomp
-        end
+  module Terminal
+    def self.output(*messages)
+      puts messages.map { |message| "#{message}#{TextColor::RESET}" }.join
     end
+
+    def self.prompt(*messages)
+      print messages.map { |message| "#{message}#{TextColor::RESET}" }.join
+      print ' '
+      gets.chomp
+    end
+
+    def self.password_prompt(*messages)
+      print messages.map { |message| "#{message}#{TextColor::RESET}" }.join
+      print ' '
+      $stdin.noecho(&:gets).chomp
+    end
+  end
 end
