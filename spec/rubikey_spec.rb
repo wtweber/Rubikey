@@ -54,42 +54,44 @@ RSpec.describe Rubikey do
         a_string_including('Passwords do not match. Please try again.')
       ).to_stdout
 
-      Rubikey.first_timer
-
       expect(MasterPassword.set?).to be true
     end
+  end
 
-    describe '.second_timer' do
-      before do
-        File.delete('mp.hash') if File.exist?('mp.hash')
-        MasterPassword.store('masterPassword')
-      end
+  describe '.second_timer' do
+    before do
+      File.delete('mp.hash') if File.exist?('mp.hash')
+      MasterPassword.store('masterPassword')
+    end
 
-      after do
-        File.delete('mp.hash') if File.exist?('mp.hash')
-      end
+    after do
+      File.delete('mp.hash') if File.exist?('mp.hash')
+    end
 
-      it 'accepts the correct master password' do
-        allow(Rubikey::Terminal).to receive(:password_prompt).and_return('masterPassword')
+    it 'accepts the correct master password' do
+      allow(Rubikey::Terminal).to receive(:password_prompt).and_return('masterPassword')
 
-        expect { Rubikey.second_timer }.not_to raise_error
-      end
+      expect { Rubikey.second_timer }.not_to raise_error
+    end
 
-      it 'asks for the password again after an incorrect password' do
-        allow(Rubikey::Terminal).to receive(:password_prompt).and_return('wrongPassword', 'masterPassword')
+    it 'asks for the password again after an incorrect password' do
+      allow(Rubikey::Terminal).to receive(:password_prompt).and_return('wrongPassword', 'masterPassword')
 
-        expect(Rubikey::Terminal).to receive(:password_prompt).twice
+      expect(Rubikey::Terminal).to receive(:password_prompt).twice
 
-        expect { Rubikey.second_timer }.not_to raise_error
-      end
+      expect { Rubikey.second_timer }.not_to raise_error
+    end
 
-
-      it 'exits after two incorrect passwords' do
-        allow(Rubikey::Terminal).to receive(:password_prompt).and_return('wrongPassword', 'wrongPassword')
-        expect { Rubikey.second_timer }.to output(
-          a_string_including('Too many failed attempts')
-        ).to_stdout
-      end
+    it 'exits after two incorrect passwords' do
+      allow(Rubikey::Terminal).to receive(:password_prompt).and_return(
+        'wrongPassword',
+        'wrongPassword'
+      )
+      allow(Rubikey).to receive(:exit)
+      
+      expect { Rubikey.second_timer }.to output(
+        a_string_including('Too many failed attempts')
+      ).to_stdout
     end
   end
 
