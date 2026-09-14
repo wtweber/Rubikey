@@ -44,7 +44,6 @@ module Rubikey
     )
 
     if master_password == master_password_confirm
-      MasterPassword.
       PasswordManager.new(master_password, true)
     else
       return
