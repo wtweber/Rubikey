@@ -30,24 +30,34 @@ module Rubikey
   end
 
   def self.first_timer
+    master_password = nil
+    master_password_confirm = nil
+
     Terminal.output(
       TextColor::GREEN + "This is the first time you have used this application.\n",
       TextColor::GREEN + 'In order to secure your passwords, we require that you create a ',
       TextColor::YELLOW + TextColor::BOLD + 'master password.', "\n"
     )
-    master_password = Terminal.password_prompt(
-      TextColor::GREEN + 'Create a new ',
-      TextColor::YELLOW + TextColor::BOLD + 'master password:'
-    )
-    master_password_confirm = Terminal.password_prompt(
-      TextColor::GREEN + 'Enter password again: '
-    )
 
-    if master_password == master_password_confirm
-      return PasswordManager.new(master_password, true)
-    else
-      return
+    loop do
+      master_password = Terminal.password_prompt(
+        TextColor::GREEN + 'Create a new ',
+        TextColor::YELLOW + TextColor::BOLD + 'master password:'
+      )
+      master_password_confirm = Terminal.password_prompt(
+        TextColor::GREEN + 'Confirm the new ',
+        TextColor::YELLOW + TextColor::BOLD + 'master password:',
+      )
+
+      break if master_password == master_password_confirm
+
+      Terminal.output(
+        TextColor::RED + "\nPasswords do not match. Please try again.\n"
+      )
     end
+
+  
+    PasswordManager.new(master_password, true)
   end
 
   def self.second_timer
