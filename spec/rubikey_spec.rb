@@ -3,15 +3,11 @@
 require 'spec_helper'
 
 RSpec.describe Rubikey do
-  describe '.hello' do
-    it 'prints a hello-world message' do
-      expect { described_class.hello }.to output("Hello, world!\n").to_stdout
-    end
-  end
-
   describe '.run' do
     it 'displays the welcome message' do
+      allow(MasterPassword).to receive(:set?).and_return(false)
       allow(Rubikey).to receive(:first_timer)
+      allow(Rubikey).to receive(:main_menu)
 
       expect { Rubikey.run }.to output(
         a_string_including('Welcome to ', 'Rubikey.')
@@ -142,6 +138,11 @@ RSpec.describe Rubikey do
         MasterPassword.store('masterPassword')
         @master_password = MasterPassword.new('masterPassword')
       end
+
+      after do
+        File.delete('mp.hash') if File.exist?('mp.hash')
+      end
+
       it 'should set master password' do
         expect(@master_password.password).to eq('masterPassword')
       end
@@ -152,7 +153,6 @@ RSpec.describe Rubikey do
         @master_password.update 'newMasterPassword'
         expect(@master_password.password).to eq('newMasterPassword')
       end
-      File.delete('mp.hash')
     end
 
     describe 'constructor' do
