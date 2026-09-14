@@ -35,16 +35,32 @@ module Rubikey
       TextColor::GREEN + 'In order to secure your passwords, we require that you create a ',
       TextColor::YELLOW + TextColor::BOLD + 'master password.', "\n"
     )
-    Terminal.password_prompt(
+    master_password = Terminal.password_prompt(
       TextColor::GREEN + 'Create a new ',
       TextColor::YELLOW + TextColor::BOLD + 'master password:'
     )
+    master_password_confirm = Terminal.password_prompt(
+      TextColor::GREEN + 'Enter password again: '
+    )
+
+    if master_password == master_password_confirm
+      MasterPassword.
+      PasswordManager.new(master_password, true)
+    else
+      return
+    end
 
     Terminal.output('Received.')
   end
 end
 
 class PasswordManager
+  attr_reader :master_password, :passwords
+
+  def initialize(master_password, new_password = false)
+    MasterPassword.store(master_password) if new_password
+    @master_password = MasterPassword.new(master_password)
+  end
 end
 
 class Password

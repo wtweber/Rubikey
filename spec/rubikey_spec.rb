@@ -71,6 +71,7 @@ RSpec.describe Rubikey do
         @master_password.update 'newMasterPassword'
         expect(@master_password.password).to eq('newMasterPassword')
       end
+      File.delete('mp.hash')
     end
 
     describe 'constructor' do
