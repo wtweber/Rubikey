@@ -5,10 +5,9 @@ require_relative 'rubikey/terminal'
 require_relative 'rubikey/vars'
 require_relative 'rubikey/dialogue'
 require_relative 'rubikey/cipher'
-require 'bcrypt'
-require 'openssl'
-require 'base64'
-require 'json'
+require_relative 'rubikey/password'
+require_relative 'rubikey/masterpassword'
+require_relative 'rubikey/passwordmanager'
 
 module Rubikey
   def self.run
@@ -57,77 +56,5 @@ module Rubikey
   def self.main_menu
     Terminal.clear
     Terminal.prompt(*Dialogue.main_menu)
-  end
-end
-
-class PasswordManager
-  attr_reader :master_password, :passwords
-
-  def initialize(master_password, new_password = false)
-    MasterPassword.store(master_password) if new_password
-    @master_password = MasterPassword.new(master_password)
-  end
-end
-
-class Password
-  attr_reader :website, :username, :enc_password
-
-  def initialize(website, username, password, master_password)
-    raise ArgumentError, 'Website can not be empty' if website.empty?
-    raise ArgumentError, 'Username can not be empty' if username.empty?
-    raise ArgumentError, 'Password can not be empty' if password.empty?
-
-    @website = website
-    @username = username
-    @enc_password = PasswordCipher.encrypt(password, master_password)
-  end
-
-  def website=(new_website)
-    raise ArgumentError, 'Website can not be empty' if new_website.empty?
-
-    @website = new_website
-  end
-
-  def username=(new_username)
-    raise ArgumentError, 'Username can not be empty' if new_username.empty?
-
-    @username = newusername
-  end
-
-  def update_password(new_password, master_password)
-    raise ArgumentError, 'Password can not be empty' if new_password.empty?
-
-    @enc_password = PasswordCipher.encrypt(new_password, master_password)
-  end
-
-  def get_password(master_password)
-    PasswordCipher.decrypt(@enc_password, master_password)
-  end
-end
-
-class MasterPassword
-  attr_reader :password
-
-  def initialize(password)
-    begin
-      stored_hash = File.read('mp.hash')
-    rescue StandardError
-      raise ArgumentError, 'Master Password has not been set.'
-    end
-    raise ArgumentError, 'Master Password does not match.' unless BCrypt::Password.new(stored_hash) == password
-
-    @password = password
-  end
-
-  def update(new_password)
-    # TODO: update the master password and reencrypt all saved passwords.
-  end
-
-  def self.store(password)
-    File.write('mp.hash', BCrypt::Password.create(password))
-  end
-
-  def self.set?
-    File.exist?('mp.hash')
   end
 end

@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require_relative 'cipher'
 
 class Password
   attr_reader :website, :username, :enc_password
