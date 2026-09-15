@@ -23,7 +23,7 @@ module Rubikey
 
     master_password = first_time_loop
 
-    PasswordManager.new(master_password, true)
+    PasswordManager.new(master_password: master_password, new_password: true)
   end
 
   def self.first_time_loop
@@ -40,10 +40,10 @@ module Rubikey
 
   def self.second_timer
     master_password = Terminal.password_prompt(*Dialogue.enter_master_password_prompt)
-    begin; PasswordManager.new(master_password)
+    begin; PasswordManager.new(master_password: master_password)
     rescue StandardError
       master_password = Terminal.password_prompt(*Dialogue.incorrect_password_prompt)
-      begin; PasswordManager.new(master_password)
+      begin; PasswordManager.new(master_password: master_password)
       rescue StandardError
         Terminal.output(*Dialogue.too_many_failed_attempts)
         exit
