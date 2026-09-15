@@ -28,16 +28,7 @@ class PasswordCipher
     iv = Base64.strict_decode64(payload[:iv])
     enc_data = Base64.strict_decode64(payload[:data])
 
-    cipher = OpenSSL::Cipher.new CIPHER_NAME
-    cipher.decrypt
-    cipher.iv = iv
-
-    iter = 20_000
-    key_len = cipher.key_len
-    digest = OpenSSL::Digest.new('SHA256')
-
-    key = OpenSSL::PKCS5.pbkdf2_hmac(password, salt, iter, key_len, digest)
-    cipher.key = key
+    cipher = PasswordCipher.init_decrypt(password, salt, iv)
 
     decrypted = cipher.update enc_data
     decrypted << cipher.final
@@ -55,5 +46,18 @@ class PasswordCipher
     cipher.key = OpenSSL::PKCS5.pbkdf2_hmac(password, salt, iter, key_len, digest)
 
     [cipher, salt, iv]
+  end
+
+  def self.init_decrypt(password, salt, ivec)
+    cipher = OpenSSL::Cipher.new CIPHER_NAME
+    cipher.decrypt
+    cipher.iv = ivec
+
+    iter = 20_000
+    key_len = cipher.key_len
+    digest = OpenSSL::Digest.new('SHA256')
+
+    cipher.key = OpenSSL::PKCS5.pbkdf2_hmac(password, salt, iter, key_len, digest)
+    cipher
   end
 end
