@@ -19,6 +19,7 @@
 .env.*
 !.env.example
 mp.hash
+pw.db
 
 
 # OS and editor files

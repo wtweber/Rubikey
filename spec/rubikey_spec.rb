@@ -101,7 +101,9 @@ RSpec.describe Rubikey do
     end
 
     describe 'getters and setters' do
-      before(:each)  { @password = Password.new('www.google.com', 'userName', 'password', 'masterpassword') }
+      before(:each)  { @password = Password.new('www.google.com', 'userName')
+      @password.update_password('password', 'masterpassword')
+     }
       it 'should set website' do
         expect(@password.website).to eq('www.google.com')
       end
@@ -119,14 +121,14 @@ RSpec.describe Rubikey do
 
     describe 'constructor' do
       it 'should reject invalid website' do
-        expect { Password.new('', 'userName', 'password') }.to raise_error(ArgumentError)
+        expect { Password.new('', 'userName') }.to raise_error(ArgumentError)
       end
       it 'should reject invalid user name' do
-        expect { Password.new('www.google.com', '', 'password') }.to raise_error(ArgumentError)
+        expect { Password.new('www.google.com', '') }.to raise_error(ArgumentError)
       end
-      it 'should reject invalid password' do
-        expect { Password.new('www.google.com', 'userName', '') }.to raise_error(ArgumentError)
-      end
+      #it 'should reject invalid password' do
+      #  expect { Password.new('www.google.com', 'userName', '') }.to raise_error(ArgumentError)
+      #end
     end
   end
 
@@ -172,21 +174,21 @@ RSpec.describe Rubikey do
     describe 'Passwords' do
       before(:each) { @password_manager = PasswordManager.new }
       it 'should be able to add a password' do
-        password = Password.new('www.google.com', 'userName', 'password')
+        password = Password.new('www.google.com', 'userName')
         @password_manager.add_password(password)
         expect(@password_manager.passwords).to include(password)
       end
       it 'should be able to remove a password' do
-        password = Password.new('www.google.com', 'userName', 'password')
+        password = Password.new('www.google.com', 'userName')
         @password_manager.add_password(password)
         @password_manager.remove_password(password)
         expect(@password_manager.passwords).not_to include(password)
       end
       it 'should be able to retrieve a password from the database' do
-        password = Password.new('www.google.com', 'userName', 'password')
+        password = Password.new('www.google.com', 'userName')
         @password_manager.add_password(password)
         @password_manager = PasswordManager.new
-        retrieved_password = @password_manager.retrieve_password('www.google.com')
+        retrieved_password = @password_manager.retrieve_password(1)
         expect(retrieved_password).to eq(password)
       end
     end

@@ -3,16 +3,21 @@
 require_relative 'cipher'
 
 class Password
-  attr_reader :website, :username, :enc_password
+  attr_reader :id, :website, :username, :enc_password
 
-  def initialize(website, username, password, master_password)
+  def initialize(website, username)
     raise ArgumentError, 'Website can not be empty' if website.empty?
     raise ArgumentError, 'Username can not be empty' if username.empty?
-    raise ArgumentError, 'Password can not be empty' if password.empty?
 
     @website = website
     @username = username
-    @enc_password = PasswordCipher.encrypt(password, master_password)
+  end
+
+  def self.new_from_db(row)
+    self.new(row[1], row[2])
+    @enc_password = row[3]
+    @id = row[0]
+    self
   end
 
   def website=(new_website)
