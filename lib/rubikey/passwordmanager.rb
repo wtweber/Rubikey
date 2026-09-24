@@ -26,4 +26,5 @@ class PasswordManager
   end
   def get_password(id)
     @DB.execute("SELECT * FROM passwords WHERE id = ?", id)
+  end
 end
