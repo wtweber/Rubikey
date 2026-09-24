@@ -172,12 +172,11 @@ RSpec.describe Rubikey do
     end
 
     describe 'Passwords' do
-      before(:each) { @password_manager = PasswordManager.new(master_password: 'masterpassword', new_password: true) }
+      before(:each) { @password_manager = PasswordManager.new }
       it 'should be able to add a password' do
         password = Password.new('www.google.com', 'userName')
-        password.update_password('password', 'masterpassword')
         @password_manager.add_password(password)
-        expect(@password_manager.all_passwords).to include(an_instance_of(Password))#.and(have_attributes(website: password.website, username: password.username, enc_password: password.enc_password)))
+        expect(@password_manager.passwords).to include(password)
       end
       it 'should be able to remove a password' do
         password = Password.new('www.google.com', 'userName')
