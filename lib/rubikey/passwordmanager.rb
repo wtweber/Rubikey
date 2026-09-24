@@ -21,9 +21,13 @@ class PasswordManager
       SQL
   end
 
-  def self.add_password(password)
+  def add_password(password)
     @DB.execute("INSERT INTO passwords (website, username, enc_password) VALUES (?, ?, ?)", [password.website, password.username, password.enc_password])
   end
   def get_password(id)
-    @DB.execute("SELECT * FROM passwords WHERE id = ?", id)
+    Password.new_from_db(@DB.execute("SELECT * FROM passwords WHERE id = ?", id))
+  end
+  def all_passwords
+    @DB.execute("SELECT * FROM passwords").map { |row| Password.new_from_db(row) }
+  end
 end
