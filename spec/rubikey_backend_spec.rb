@@ -112,6 +112,20 @@ RSpec.describe Rubikey do
         expect(retrieved_password).to be_kind_of(Password)
       end
 
+      it 'should be able to handle an id not found in the database' do
+        expect { @password_manager.get_password(100) }.to raise_error(ArgumentError)
+      end
+
+      it 'should be able to retrieve passwords from the database by an exact website' do
+        @password_manager.add_password(@password)
+        retrieved_passwords = @password_manager.get_passwords_for('www.google.com')
+        expect(retrieved_passwords.count).to be > 0
+      end
+
+      it 'should be able to handle nothing returned for websitte' do
+        expect(@password_manager.get_passwords_for('www.unknown_website.com')).to be_empty
+      end
+
       it 'should be able to remove a password' do
         @password_manager.remove_password(password)
         expect(@password_manager.all_passwords).not_to include(password)

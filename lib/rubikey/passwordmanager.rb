@@ -36,11 +36,6 @@ class PasswordManager
 
   # Get password by ID from database
   def get_password(id)
-    #db_row = @database.execute('SELECT * FROM passwords WHERE id = ?', id).first
-    #pw = Password.new(db_row[1], db_row[2])
-    #pw.enc_password = db_row[3]
-    #pw.id = db_row[0]
-    #return pw
     Password.new_from_db(@database.execute('SELECT * FROM passwords WHERE id = ?', id).first)
   end
 
