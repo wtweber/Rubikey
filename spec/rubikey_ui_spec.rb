@@ -3,6 +3,16 @@
 require 'spec_helper'
 
 RSpec.describe Rubikey do
+  #Clean files to allow for tests from initial state
+  before do
+      File.delete('pw.db') if File.exist?('pw.db')
+      File.delete('mp.hash') if File.exist?('mp.hash')
+    end
+  after do
+    File.delete('pw.db') if File.exist?('pw.db')
+    File.delete('mp.hash') if File.exist?('mp.hash')
+  end
+
   describe '.run' do
     it 'displays the welcome message' do
       allow(MasterPassword).to receive(:set?).and_return(false)

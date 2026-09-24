@@ -3,16 +3,28 @@
 require 'spec_helper'
 
 RSpec.describe Rubikey do
+  #Clean files to allow for tests from initial state
+  before do
+      File.delete('pw.db') if File.exist?('pw.db')
+      File.delete('mp.hash') if File.exist?('mp.hash')
+    end
+  after do
+    File.delete('pw.db') if File.exist?('pw.db')
+    File.delete('mp.hash') if File.exist?('mp.hash')
+  end
 
   describe 'Password' do
+
     it 'should be defined' do
       expect { Password }.not_to raise_error
     end
 
     describe 'getters and setters' do
-      before(:each)  { @password = Password.new('www.google.com', 'userName')
-      @password.update_password('password', 'masterpassword')
-     }
+      before do
+        @password = Password.new('www.google.com', 'userName')
+        @password.update_password('password', 'masterpassword')
+      end
+
       it 'should set website' do
         expect(@password.website).to eq('www.google.com')
       end
@@ -47,7 +59,7 @@ RSpec.describe Rubikey do
     end
 
     describe 'getters and setters' do
-      before(:each) do
+      before do
         MasterPassword.store('masterPassword')
         @master_password = MasterPassword.new('masterPassword')
       end
@@ -76,12 +88,16 @@ RSpec.describe Rubikey do
   end
 
   describe 'PasswordManager' do
+    before do
+      @password_manager = PasswordManager.new(master_password: 'masterpassword', new_password: true)
+    end
+
     it 'should be defined' do
       expect { PasswordManager }.not_to raise_error
     end
 
     describe 'Passwords' do
-      before(:each) { @password_manager = PasswordManager.new(master_password: 'masterpassword', new_password: true) }
+      #before(:each) { @password_manager = PasswordManager.new(master_password: 'masterpassword', new_password: true) }
       it 'should be able to add a password' do
         password = Password.new('www.google.com', 'userName')
         password.update_password('password', 'masterpassword')
