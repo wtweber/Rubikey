@@ -31,6 +31,10 @@ RSpec.describe Rubikey do
       it 'should set user name' do
         expect(@password.username).to eq('userName')
       end
+      it 'should update user name' do
+        @password.username = 'newUserName'
+        expect(@password.username).to eq('newUserName')
+      end
       it 'should set password' do
         expect(@password.get_password('masterpassword')).to eq('password')
       end
@@ -77,6 +81,8 @@ RSpec.describe Rubikey do
       it 'should be able to change master password' do
         @master_password.update 'newMasterPassword'
         expect(@master_password.password).to eq('newMasterPassword')
+        expect { MasterPassword.new('masterPassword') }.to raise_error(ArgumentError)
+        expect { MasterPassword.new('newMasterPassword') }.not_to raise_error
       end
     end
 
@@ -92,6 +98,10 @@ RSpec.describe Rubikey do
       @password_manager = PasswordManager.new(master_password: 'masterpassword', new_password: true)
       @password = Password.new(website: 'www.google.com', username: 'userName')
       @password.update_password('password', 'masterpassword')
+    end
+
+    after do
+      @password_manager&.close
     end
 
     it 'should be defined' do
@@ -123,8 +133,14 @@ RSpec.describe Rubikey do
       end
 
       it 'should be able to remove a password' do
-        @password_manager.remove_password(password)
-        expect(@password_manager.all_passwords).not_to include(password)
+        @password_manager.add_password(@password)
+        @password_manager.remove_password(@password)
+        expect(@password_manager.all_passwords).not_to include(@password)
+      end
+
+      it 'should close the database connection' do
+        expect { @password_manager.close }.not_to raise_error
+        expect { File.delete('pw.db') }.not_to raise_error
       end
     end
   end

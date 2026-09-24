@@ -32,6 +32,7 @@ class PasswordManager
   def add_password(password)
     @database.execute('INSERT INTO passwords (website, username, enc_password) VALUES (?, ?, ?)',
                       [password.website, password.username, password.enc_password])
+    password.id = @database.last_insert_row_id
   end
 
   # Get password by ID from database
@@ -49,8 +50,15 @@ class PasswordManager
     @database.execute('SELECT * FROM passwords').map { |row| Password.new_from_db(row) }
   end
 
-  # Delete specific instance of Password from db
-  def delete_password(password)
-    # TODO: delete password from database
+  # Delete a specific Password instance from the database
+  def remove_password(password)
+    @database.execute('DELETE FROM passwords WHERE id = ?', password.id)
+  end
+
+  alias delete_password remove_password
+
+  # Close the database connection so the database file can be moved or deleted
+  def close
+    @database.close unless @database.closed?
   end
 end

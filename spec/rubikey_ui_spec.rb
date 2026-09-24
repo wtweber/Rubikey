@@ -37,7 +37,8 @@ RSpec.describe Rubikey do
     it 'creates a master password when one does not exist' do
       allow(Rubikey::Terminal).to receive(:password_prompt).and_return('masterPassword', 'masterPassword')
 
-      Rubikey.first_timer
+      password_manager = Rubikey.first_timer
+      password_manager.close
 
       expect(File).to exist('mp.hash')
       expect(MasterPassword.set?).to be true
@@ -46,7 +47,8 @@ RSpec.describe Rubikey do
     it 'creates a master password that can be used to authenticate' do
       allow(Rubikey::Terminal).to receive(:password_prompt).and_return('masterPassword', 'masterPassword')
 
-      Rubikey.first_timer
+      password_manager = Rubikey.first_timer
+      password_manager.close
       expect { MasterPassword.new('masterPassword') }.not_to raise_error
     end
 
@@ -59,7 +61,8 @@ RSpec.describe Rubikey do
       )
 
       expect do
-        Rubikey.first_timer
+        password_manager = Rubikey.first_timer
+        password_manager.close
       end.to output(
         a_string_including('Passwords do not match. Please try again.')
       ).to_stdout
@@ -81,7 +84,8 @@ RSpec.describe Rubikey do
     it 'accepts the correct master password' do
       allow(Rubikey::Terminal).to receive(:password_prompt).and_return('masterPassword')
 
-      expect { Rubikey.second_timer }.not_to raise_error
+      password_manager = Rubikey.second_timer
+      password_manager.close
     end
 
     it 'asks for the password again after an incorrect password' do
@@ -89,7 +93,8 @@ RSpec.describe Rubikey do
 
       expect(Rubikey::Terminal).to receive(:password_prompt).twice
 
-      expect { Rubikey.second_timer }.not_to raise_error
+      password_manager = Rubikey.second_timer
+      password_manager.close
     end
 
     it 'exits after two incorrect passwords' do

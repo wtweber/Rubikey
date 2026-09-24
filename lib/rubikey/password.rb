@@ -5,6 +5,7 @@ require_relative 'cipher'
 # Stores website info and encrypts passwords using a master master password for later decryption.
 class Password
   attr_reader :id, :website, :username, :enc_password
+  attr_writer :id
 
   # Initialization of a password object without the encrypted data
   def initialize(website:, username:, enc_password: nil, id: nil)
@@ -44,7 +45,7 @@ class Password
   def username=(new_username)
     raise ArgumentError, 'Username can not be empty' if new_username.empty?
 
-    @username = newusername
+    @username = new_username
   end
 
   # Encrypt and store new password
