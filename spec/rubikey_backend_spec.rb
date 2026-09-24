@@ -97,7 +97,6 @@ RSpec.describe Rubikey do
     end
 
     describe 'Passwords' do
-      #before(:each) { @password_manager = PasswordManager.new(master_password: 'masterpassword', new_password: true) }
       it 'should be able to add a password' do
         password = Password.new('www.google.com', 'userName')
         password.update_password('password', 'masterpassword')

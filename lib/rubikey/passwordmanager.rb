@@ -3,6 +3,7 @@
 require_relative 'masterpassword'
 require 'sqlite3'
 
+# PasswordManager class to store and handle passwords in an sql database for retrieval
 class PasswordManager
   attr_reader :master_password
 
@@ -10,24 +11,46 @@ class PasswordManager
     MasterPassword.store(master_password) if new_password
     @master_password = MasterPassword.new(master_password)
 
-    @DB = SQLite3::Database.new('pw.db')
-    @DB.execute <<-SQL
+    # Create and setup the SQL database to store password data
+    @database = SQLite3::Database.new('pw.db')
+    create_database
+  end
+
+  # Create SQL database table for passwords
+  def create_database
+    @database.execute <<-SQL
     CREATE TABLE IF NOT EXISTS passwords (
       id INTEGER PRIMARY KEY,
       website TEXT,
       username TEXT,
       enc_password TEXT
       );
-      SQL
+    SQL
   end
 
+  # Insert new instance of a password into the database
   def add_password(password)
-    @DB.execute("INSERT INTO passwords (website, username, enc_password) VALUES (?, ?, ?)", [password.website, password.username, password.enc_password])
+    @database.execute('INSERT INTO passwords (website, username, enc_password) VALUES (?, ?, ?)',
+                      [password.website, password.username, password.enc_password])
   end
+
+  # Get password by ID from database
   def get_password(id)
-    Password.new_from_db(@DB.execute("SELECT * FROM passwords WHERE id = ?", id))
+    Password.new_from_db(@database.execute('SELECT * FROM passwords WHERE id = ?', id))
   end
+
+  # Get passwords for specific website
+  def get_passwords_for(site)
+    @database.execute('SELECT * FROM passwords WHERE website = ?', site).map { |row| Password.new_from_db(row) }
+  end
+
+  # Get all passwords from database
   def all_passwords
-    @DB.execute("SELECT * FROM passwords").map { |row| Password.new_from_db(row) }
+    @database.execute('SELECT * FROM passwords').map { |row| Password.new_from_db(row) }
+  end
+
+  # Delete specific instance of Password from db
+  def delete_password(password)
+    # TODO: delete password from database
   end
 end
