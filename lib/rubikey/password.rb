@@ -13,6 +13,10 @@ class Password
     @username = username
   end
 
+  def ==(other)
+    self.class == other.class && selfwebsite == other.website && self.username == other.username && self.enc_password == other.enc_password
+  end
+
   def self.new_from_db(row)
     self.new(row[1], row[2])
     @enc_password = row[3]
