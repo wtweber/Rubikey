@@ -46,9 +46,7 @@ class PasswordManager
 
   # Get all passwords from database
   def all_passwords
-    all_pw = @database.execute('SELECT * FROM passwords')
-    pws = all_pw.map { |row| Password.new_from_db(row) }
-    return pws
+    @database.execute('SELECT * FROM passwords').map { |row| Password.new_from_db(row) }
   end
 
   # Delete specific instance of Password from db

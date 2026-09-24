@@ -100,16 +100,13 @@ RSpec.describe Rubikey do
 
     describe 'Passwords' do
       it 'should be able to add a password' do
-        pw_count = @password_manager.all_passwords.count
         @password_manager.add_password(@password)
-        expect(@password_manager.all_passwords.count == pw_count + 1)
         expect(@password_manager.all_passwords).to include(@password)
       end
       
       it 'should be able to retrieve a password from the database by id' do
         @password_manager.add_password(@password)
-        retrieved_password = @password_manager.get_password(1)
-        expect(retrieved_password).to be_kind_of(Password)
+        expect(@password_manager.get_password(1)).to be_kind_of(Password)
       end
 
       it 'should be able to handle an id not found in the database' do
@@ -118,8 +115,7 @@ RSpec.describe Rubikey do
 
       it 'should be able to retrieve passwords from the database by an exact website' do
         @password_manager.add_password(@password)
-        retrieved_passwords = @password_manager.get_passwords_for('www.google.com')
-        expect(retrieved_passwords.count).to be > 0
+        expect(@password_manager.get_passwords_for('www.google.com').count).to be > 0
       end
 
       it 'should be able to handle nothing returned for websitte' do
