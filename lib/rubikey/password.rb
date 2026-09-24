@@ -29,6 +29,7 @@ class Password
 
   # Initilization of a password from the sql row returned from the stored db
   def self.new_from_db(row)
+    raise ArgumentError, 'Nothing found in database' if row.nil?
     new(website: row[1], username: row[2], enc_password: row[3], id: row[0])
   end
 
