@@ -73,16 +73,20 @@ RSpec.describe Rubikey do
       end
 
       it 'should set master password' do
-        expect(@master_password.password).to eq('masterPassword')
+        expect(@master_password.auth('masterPassword'))
       end
       it 'should fail when incorrect password is input' do
         expect { MasterPassword.new('notTheMasterPassword') }.to raise_error(ArgumentError)
       end
-      it 'should be able to change master password' do
-        @master_password.update 'newMasterPassword'
-        expect(@master_password.password).to eq('newMasterPassword')
-        expect { MasterPassword.new('masterPassword') }.to raise_error(ArgumentError)
-        expect { MasterPassword.new('newMasterPassword') }.not_to raise_error
+      it 'should be able to store a new master password' do
+        @master_password.update('masterPassword', 'newMasterPassword')
+        expect(@master_password.auth('newMasterPassword'))
+      end
+      it 'should not store a new password when provided wrong password' do
+        expect { @master_password.update('worngPassword', 'newMasterPassword') }.to raise_error(ArgumentError)
+      end
+      it 'should not allow you to set the new password to nothing' do
+        expect { @master_password.update('masterPassword', '') }.to raise_error(ArgumentError)
       end
     end
 

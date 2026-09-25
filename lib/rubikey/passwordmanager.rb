@@ -61,4 +61,9 @@ class PasswordManager
   def close
     @database.close unless @database.closed?
   end
+
+  def update_masterpassword(newpassword)
+    
+
+  end
 end
