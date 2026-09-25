@@ -81,6 +81,7 @@ RSpec.describe Rubikey do
       it 'should be able to store a new master password' do
         @master_password.update('masterPassword', 'newMasterPassword')
         expect(@master_password.auth('newMasterPassword'))
+        expect { MasterPassword.new('newMasterPassword') }.not_to raise_error
       end
       it 'should not store a new password when provided wrong password' do
         expect { @master_password.update('worngPassword', 'newMasterPassword') }.to raise_error(ArgumentError)
