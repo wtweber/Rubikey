@@ -2,6 +2,7 @@
 
 require 'bcrypt'
 
+# Master password to store and retrieve the master password, as well as check input passwords against the stored hash
 class MasterPassword
   attr_reader :password
 
@@ -20,10 +21,12 @@ class MasterPassword
     # TODO: update the master password and reencrypt all saved passwords.
   end
 
+  # Store hash in mp.hash file
   def self.store(password)
     File.write('mp.hash', BCrypt::Password.create(password))
   end
 
+  # Check if the mp.hash file exists to see if its been set.
   def self.set?
     File.exist?('mp.hash')
   end
