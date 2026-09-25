@@ -144,11 +144,15 @@ RSpec.describe Rubikey do
       end
     end
     describe 'Master Passwords' do
+      it 'should fail to update master password if incorrect password is provided' do
+        expect { @password_manager.change_master_password('wrongMasterPassword', 'newMasterPassword') }.to raise_error(ArgumentError)
+      end
       it 'should be able to update master password and reencrypt all saved passwords' do
         @password_manager.add_password(@password)
         @password_manager.change_master_password('masterPassword', 'newMasterPassword')
         expect(@password_manager.get_password_with_id(1).get_password('newMasterpassword')).to eq('password')
       end
+      
     end
     describe 'Databse' do
       it 'should close the database connection' do

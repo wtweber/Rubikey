@@ -63,5 +63,7 @@ class PasswordManager
   end
 
   def change_master_password(masterPassword, newMasterPassword)
+    raise ArgumentError, 'Master Password is incorrect.' unless @master_password.auth(masterPassword)
+
   end
 end
