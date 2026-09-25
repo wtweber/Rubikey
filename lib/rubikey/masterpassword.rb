@@ -31,7 +31,7 @@ class MasterPassword
 
     @password = new_password
     @hash = BCrypt::Password.create(new_password)
-    self.store(new_password)
+    MasterPassword.store(new_password)
   end
 
   # Store hash in mp.hash file
