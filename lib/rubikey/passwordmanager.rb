@@ -35,6 +35,11 @@ class PasswordManager
     password.id = @database.last_insert_row_id
   end
 
+  def update_password(password)
+    @database.execute('INSERT OR REPLACE INTO passwords (id, website, username, enc_password) VALUES (?, ?, ?, ?)',
+                      [password.id, password.website, password.username, password.enc_password])
+  end
+
   # Get password by ID from database
   def get_password_with_id(id)
     Password.new_from_db(@database.execute('SELECT * FROM passwords WHERE id = ?', id).first)
@@ -62,8 +67,13 @@ class PasswordManager
     @database.close unless @database.closed?
   end
 
-  def change_master_password(masterPassword, newMasterPassword)
-    raise ArgumentError, 'Master Password is incorrect.' unless @master_password.auth(masterPassword)
+  def change_master_password(master_password, new_master_password)
+    raise ArgumentError, 'Master Password is incorrect.' unless @master_password.auth(master_password)
 
+    all_passwords.each do |pw|
+      new_pw = pw
+      new_pw.reencrypt_password(master_password, new_master_password)
+      update_password(new_pw)
+    end
   end
 end

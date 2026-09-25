@@ -29,7 +29,7 @@ class MasterPassword
   # Function to hash and store a new password
   def update(current_password, new_password)
     raise ArgumentError, 'New password can not be empty' if new_password.empty?
-    raise ArgumentError, 'Master Password is incorrect.' unless self.auth(current_password)
+    raise ArgumentError, 'Master Password is incorrect.' unless auth(current_password)
 
     @password = new_password
     @hash = BCrypt::Password.create(new_password)
