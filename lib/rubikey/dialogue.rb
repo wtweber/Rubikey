@@ -103,7 +103,7 @@ module Rubikey
 
     def self.password_selection_prompt
       [
-        TextColor::BOLD + "\nEnter q to return to the main menu.\n",
+        TextColor::BOLD + TextColor::RED + "\nEnter q to return to the main menu.\n",
         TextColor::YELLOW + TextColor::BOLD + 'Enter an ID to reveal its password:',
       ]
     end
