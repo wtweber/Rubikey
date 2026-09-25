@@ -67,13 +67,13 @@ class PasswordManager
     @database.close unless @database.closed?
   end
 
-  def change_master_password(masterPassword, newMasterPassword)
-    raise ArgumentError, 'Master Password is incorrect.' unless @master_password.auth(masterPassword)
+  def change_master_password(master_password, new_master_password)
+    raise ArgumentError, 'Master Password is incorrect.' unless @master_password.auth(master_password)
 
     all_passwords.each do |pw|
       new_pw = pw
-      new_pw.reencrypt_password(masterPassword, newMasterPassword)
-      self.update_password(new_pw)
+      new_pw.reencrypt_password(master_password, new_master_password)
+      update_password(new_pw)
     end
   end
 end
