@@ -4,8 +4,8 @@ require_relative 'cipher'
 
 # Stores website info and encrypts passwords using a master master password for later decryption.
 class Password
-  attr_reader :id, :website, :username, :enc_password
-  attr_writer :id
+  attr_accessor :id
+  attr_reader :website, :username, :enc_password
 
   # Initialization of a password object without the encrypted data
   def initialize(website:, username:, enc_password: nil, id: nil)
@@ -56,8 +56,8 @@ class Password
   end
 
   def reencrypt_password(master_password, new_master_password)
-    password = self.get_password(master_password)
-    self.update_password(password, new_master_password)
+    password = get_password(master_password)
+    update_password(password, new_master_password)
   end
 
   # Decrypt stored pasword data using master password

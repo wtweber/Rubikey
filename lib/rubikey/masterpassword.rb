@@ -4,9 +4,6 @@ require 'bcrypt'
 
 # Master password to store and retrieve the master password, as well as check input passwords against the stored hash
 class MasterPassword
-  @password
-  @stored_hash
-
   def initialize(password)
     begin
       stored_hash = File.read('mp.hash')
@@ -27,7 +24,7 @@ class MasterPassword
   # Function to hash and store a new password
   def update(current_password, new_password)
     raise ArgumentError, 'New password can not be empty' if new_password.empty?
-    raise ArgumentError, 'Master Password is incorrect.' unless self.auth(current_password)
+    raise ArgumentError, 'Master Password is incorrect.' unless auth(current_password)
 
     @password = new_password
     @hash = BCrypt::Password.create(new_password)
