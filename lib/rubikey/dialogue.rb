@@ -66,32 +66,74 @@ module Rubikey
 
     def self.main_menu
       [
-        TextColor::GREEN + "\nMain menu\n",
+        TextColor::YELLOW + "\nMain menu\n",
         TextColor::GREEN + "1. New password\n",
         TextColor::GREEN + "2. Show passwords\n",
         TextColor::GREEN + "3. Search\n",
-        TextColor::GREEN + "4. Options\n\n",
+        TextColor::GREEN + "4. Options\n",
+        TextColor::RED + "q. Quit\n\n",
         TextColor::YELLOW + TextColor::BOLD + 'Select an option:'
       ]
     end
 
     def self.new_password_website
       [
-        TextColor::GREEN + "\nNew password\n",
+        TextColor::GREEN + "\n<<New password>>\n",
         TextColor::YELLOW + TextColor::BOLD + 'Enter the website:'
       ]
     end
 
-    def self.new_password_username
+    def self.ask_username
       [
-        TextColor::YELLOW + TextColor::BOLD + 'username:'
+        TextColor::YELLOW + TextColor::BOLD + 'Enter the username:'
       ]
     end
 
-    def self.new_password_username
+    def self.ask_password
       [
-        TextColor::YELLOW + TextColor::BOLD + 'Would you like to generate a password:'
+        TextColor::YELLOW + TextColor::BOLD + 'Enter the password:'
       ]
+    end
+
+    def self.password_list_header
+      [
+        TextColor::GREEN + "\nSaved passwords\n"
+      ]
+    end
+
+    def self.password_selection_prompt
+      [
+        TextColor::BOLD + "\nEnter q to return to the main menu.\n",
+        TextColor::YELLOW + TextColor::BOLD + 'Enter an ID to reveal its password:',
+      ]
+    end
+
+    def self.option_not_available
+      [TextColor::RED + 'That option is not available yet.']
+    end
+
+    def self.invalid_option
+      [TextColor::RED + 'Invalid option.']
+    end
+
+    def self.password_saved
+      [TextColor::GREEN + 'Password saved.']
+    end
+
+    def self.no_passwords_saved
+      [TextColor::YELLOW + 'No passwords saved.']
+    end
+
+    def self.password_list_entry(id:, website:, username:)
+      [TextColor::GREEN + "#{id}. #{website} | usr: <#{username}>"]
+    end
+
+    def self.revealed_password(password)
+      [TextColor::WHITE + 'Password: ', TextColor::BLUE + password]
+    end
+
+    def self.password_id_not_found
+      [TextColor::RED + 'No saved password has that ID.']
     end
   end
 end

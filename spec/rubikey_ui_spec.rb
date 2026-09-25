@@ -25,6 +25,100 @@ RSpec.describe Rubikey do
     end
   end
 
+  describe '.main_menu' do
+    it 'closes the password manager when q is selected' do
+      password_manager = instance_double(PasswordManager, close: nil)
+      Rubikey.instance_variable_set(:@password_manager, password_manager)
+      allow(Rubikey::Terminal).to receive(:prompt).and_return('q')
+
+      Rubikey.main_menu
+
+      expect(password_manager).to have_received(:close)
+    end
+
+    it 'opens the password list when option 2 is selected' do
+      password_manager = instance_double(PasswordManager, close: nil)
+      Rubikey.instance_variable_set(:@password_manager, password_manager)
+      allow(Rubikey::Terminal).to receive(:prompt).and_return('2', 'q')
+      expect(Rubikey).to receive(:show_passwords)
+
+      Rubikey.main_menu
+    end
+
+    it 'keeps an invalid-option message above the next menu' do
+      password_manager = instance_double(PasswordManager, close: nil)
+      Rubikey.instance_variable_set(:@password_manager, password_manager)
+      selections = ['invalid', 'q']
+      allow(Rubikey::Terminal).to receive(:prompt) do |*messages|
+        puts messages.join
+        selections.shift
+      end
+
+      expect { Rubikey.main_menu }.to output(/Invalid option\..*Main menu/m).to_stdout
+    end
+
+    it 'keeps the empty-password message above the next menu' do
+      password_manager = instance_double(PasswordManager, close: nil, all_passwords: [])
+      Rubikey.instance_variable_set(:@password_manager, password_manager)
+      selections = ['2', 'q']
+      allow(Rubikey::Terminal).to receive(:prompt) do |*messages|
+        puts messages.join
+        selections.shift
+      end
+
+      expect { Rubikey.main_menu }.to output(/No passwords saved\..*Main menu/m).to_stdout
+    end
+  end
+
+  describe '.new_password' do
+    it 'encrypts and saves the prompted password' do
+      password_manager = PasswordManager.new(master_password: 'masterPassword', new_password: true)
+      Rubikey.instance_variable_set(:@password_manager, password_manager)
+      allow(Rubikey::Terminal).to receive(:prompt).and_return('example.com', 'alice')
+      allow(Rubikey::Terminal).to receive(:password_prompt).and_return('secret')
+
+      Rubikey.new_password
+
+      saved_password = password_manager.get_passwords_for('example.com').first
+      expect(saved_password.username).to eq('alice')
+      expect(saved_password.get_password('masterPassword')).to eq('secret')
+    ensure
+      password_manager&.close
+    end
+  end
+
+  describe '.show_passwords' do
+    it 'lists account details and reveals the password after its ID is selected' do
+      password_manager = PasswordManager.new(master_password: 'masterPassword', new_password: true)
+      Rubikey.instance_variable_set(:@password_manager, password_manager)
+      password = Password.new(website: 'example.com', username: 'alice')
+      password.update_password('secret', 'masterPassword')
+      password_manager.add_password(password)
+      allow(Rubikey::Terminal).to receive(:prompt).and_return(password.id.to_s, 'q')
+
+      expect { Rubikey.show_passwords }.to output(
+        a_string_including('example.com', 'alice', 'Password: ', 'secret')
+      ).to_stdout
+    ensure
+      password_manager&.close
+    end
+
+    it 'reports when no passwords are saved' do
+      password_manager = PasswordManager.new(master_password: 'masterPassword', new_password: true)
+      Rubikey.instance_variable_set(:@password_manager, password_manager)
+
+      expect(Rubikey.show_passwords).to eq(Rubikey::Dialogue.no_passwords_saved)
+    ensure
+      password_manager&.close
+    end
+
+    it 'colors the password label white and the revealed value blue' do
+      expect(Rubikey::Dialogue.revealed_password('secret')).to eq(
+        [Rubikey::TextColor::WHITE + 'Password: ', Rubikey::TextColor::BLUE + 'secret']
+      )
+    end
+  end
+
   describe '.first_timer' do
     before do
       File.delete('mp.hash') if File.exist?('mp.hash')

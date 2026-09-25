@@ -4,6 +4,8 @@ require 'bcrypt'
 
 # Master password to store and retrieve the master password, as well as check input passwords against the stored hash
 class MasterPassword
+  attr_reader :password
+
   @password
   @stored_hash
 

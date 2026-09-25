@@ -52,7 +52,66 @@ module Rubikey
   end
 
   def self.main_menu
-    Terminal.clear
-    Terminal.prompt(*Dialogue.main_menu)
+    menu_message = nil
+    loop do
+      Terminal.clear
+      Terminal.output(*menu_message) if menu_message
+      menu_message = nil
+      selection = Terminal.prompt(*Dialogue.main_menu).downcase
+
+      case selection
+      when '1'
+        menu_message = new_password
+      when '2'
+        menu_message = show_passwords
+      when 'q'
+        @password_manager.close
+        break
+      when '3', '4'
+        menu_message = Dialogue.option_not_available
+      else
+        menu_message = Dialogue.invalid_option
+      end
+    end
+  end
+
+  def self.new_password
+    website = Terminal.prompt(*Dialogue.new_password_website)
+    username = Terminal.prompt(*Dialogue.ask_username)
+    password_value = Terminal.password_prompt(*Dialogue.ask_password)
+
+    password = Password.new(website: website, username: username)
+    password.update_password(password_value, @password_manager.master_password.password)
+    @password_manager.add_password(password)
+    Dialogue.password_saved
+  end
+
+  def self.show_passwords
+    passwords = @password_manager.all_passwords
+    if passwords.empty?
+      return Dialogue.no_passwords_saved
+    end
+
+    Terminal.output(*Dialogue.password_list_header)
+    passwords.each do |password|
+      Terminal.output(*Dialogue.password_list_entry(
+        id: password.id,
+        website: password.website,
+        username: password.username
+      ))
+    end
+
+    loop do
+      selection = Terminal.prompt(*Dialogue.password_selection_prompt).downcase
+      return if selection == 'q'
+
+      password = passwords.find { |entry| entry.id.to_s == selection }
+      if password
+        secret = password.get_password(@password_manager.master_password.password)
+        Terminal.output(*Dialogue.revealed_password(secret))
+      else
+        Terminal.output(*Dialogue.password_id_not_found)
+      end
+    end
   end
 end
