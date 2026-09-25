@@ -121,11 +121,11 @@ RSpec.describe Rubikey do
       
       it 'should be able to retrieve a password from the database by id' do
         @password_manager.add_password(@password)
-        expect(@password_manager.get_password(1)).to be_kind_of(Password)
+        expect(@password_manager.get_password_with_id(1)).to be_kind_of(Password)
       end
 
       it 'should be able to handle an id not found in the database' do
-        expect { @password_manager.get_password(100) }.to raise_error(ArgumentError)
+        expect { @password_manager.get_password_with_id(100) }.to raise_error(ArgumentError)
       end
 
       it 'should be able to retrieve passwords from the database by an exact website' do
@@ -142,7 +142,15 @@ RSpec.describe Rubikey do
         @password_manager.remove_password(@password)
         expect(@password_manager.all_passwords).not_to include(@password)
       end
-
+    end
+    describe 'Master Passwords' do
+      it 'should be able to update master password and reencrypt all saved passwords' do
+        @password_manager.add_password(@password)
+        @password_manager.change_master_password('masterPassword', 'newMasterPassword')
+        expect(@password_manager.get_password_with_id(1).get_password('newMasterpassword')).to eq('password')
+      end
+    end
+    describe 'Databse' do
       it 'should close the database connection' do
         expect { @password_manager.close }.not_to raise_error
         expect { File.delete('pw.db') }.not_to raise_error

@@ -36,7 +36,7 @@ class PasswordManager
   end
 
   # Get password by ID from database
-  def get_password(id)
+  def get_password_with_id(id)
     Password.new_from_db(@database.execute('SELECT * FROM passwords WHERE id = ?', id).first)
   end
 
@@ -62,8 +62,6 @@ class PasswordManager
     @database.close unless @database.closed?
   end
 
-  def update_masterpassword(newpassword)
-    
-
+  def change_master_password(masterPassword, newMasterPassword)
   end
 end
