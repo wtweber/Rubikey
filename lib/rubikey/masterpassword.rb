@@ -6,9 +6,6 @@ require 'bcrypt'
 class MasterPassword
   attr_reader :password
 
-  @password
-  @stored_hash
-
   def initialize(password)
     begin
       stored_hash = File.read('mp.hash')

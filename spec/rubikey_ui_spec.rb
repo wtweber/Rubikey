@@ -3,11 +3,11 @@
 require 'spec_helper'
 
 RSpec.describe Rubikey do
-  #Clean files to allow for tests from initial state
+  # Clean files to allow for tests from initial state
   before do
-      File.delete('pw.db') if File.exist?('pw.db')
-      File.delete('mp.hash') if File.exist?('mp.hash')
-    end
+    File.delete('pw.db') if File.exist?('pw.db')
+    File.delete('mp.hash') if File.exist?('mp.hash')
+  end
   after do
     File.delete('pw.db') if File.exist?('pw.db')
     File.delete('mp.hash') if File.exist?('mp.hash')
@@ -48,7 +48,7 @@ RSpec.describe Rubikey do
     it 'keeps an invalid-option message above the next menu' do
       password_manager = instance_double(PasswordManager, close: nil)
       Rubikey.instance_variable_set(:@password_manager, password_manager)
-      selections = ['invalid', 'q']
+      selections = %w[invalid q]
       allow(Rubikey::Terminal).to receive(:prompt) do |*messages|
         puts messages.join
         selections.shift
@@ -60,7 +60,7 @@ RSpec.describe Rubikey do
     it 'keeps the empty-password message above the next menu' do
       password_manager = instance_double(PasswordManager, close: nil, all_passwords: [])
       Rubikey.instance_variable_set(:@password_manager, password_manager)
-      selections = ['2', 'q']
+      selections = %w[2 q]
       allow(Rubikey::Terminal).to receive(:prompt) do |*messages|
         puts messages.join
         selections.shift

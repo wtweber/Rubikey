@@ -9,6 +9,8 @@ require_relative 'rubikey/password'
 require_relative 'rubikey/masterpassword'
 require_relative 'rubikey/passwordmanager'
 
+# Acts as the main class.
+# This class handles the main menu and calls upon the PasswordManager class for password-related work.
 module Rubikey
   def self.run
     Terminal.output(*Dialogue.welcome_message)
@@ -88,9 +90,7 @@ module Rubikey
 
   def self.show_passwords
     passwords = @password_manager.all_passwords
-    if passwords.empty?
-      return Dialogue.no_passwords_saved
-    end
+    return Dialogue.no_passwords_saved if passwords.empty?
 
     Terminal.output(*Dialogue.password_list_header)
     passwords.each do |password|

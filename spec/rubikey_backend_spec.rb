@@ -3,18 +3,17 @@
 require 'spec_helper'
 
 RSpec.describe Rubikey do
-  #Clean files to allow for tests from initial state
+  # Clean files to allow for tests from initial state
   before do
-      File.delete('pw.db') if File.exist?('pw.db')
-      File.delete('mp.hash') if File.exist?('mp.hash')
-    end
+    File.delete('pw.db') if File.exist?('pw.db')
+    File.delete('mp.hash') if File.exist?('mp.hash')
+  end
   after do
     File.delete('pw.db') if File.exist?('pw.db')
     File.delete('mp.hash') if File.exist?('mp.hash')
   end
 
   describe 'Password' do
-
     it 'should be defined' do
       expect { Password }.not_to raise_error
     end
@@ -51,9 +50,9 @@ RSpec.describe Rubikey do
       it 'should reject invalid user name' do
         expect { Password.new(website: 'www.google.com', username: '') }.to raise_error(ArgumentError)
       end
-      #it 'should reject invalid password' do
+      # it 'should reject invalid password' do
       #  expect { Password.new('www.google.com', 'userName', '') }.to raise_error(ArgumentError)
-      #end
+      # end
     end
   end
 
@@ -118,7 +117,7 @@ RSpec.describe Rubikey do
         @password_manager.add_password(@password)
         expect(@password_manager.all_passwords).to include(@password)
       end
-      
+
       it 'should be able to retrieve a password from the database by id' do
         @password_manager.add_password(@password)
         expect(@password_manager.get_password_with_id(1)).to be_kind_of(Password)
@@ -145,14 +144,15 @@ RSpec.describe Rubikey do
     end
     describe 'Master Passwords' do
       it 'should fail to update master password if incorrect password is provided' do
-        expect { @password_manager.change_master_password('wrongMasterPassword', 'newMasterPassword') }.to raise_error(ArgumentError)
+        expect do
+          @password_manager.change_master_password('wrongMasterPassword', 'newMasterPassword')
+        end.to raise_error(ArgumentError)
       end
       it 'should be able to update master password and reencrypt all saved passwords' do
         @password_manager.add_password(@password)
         @password_manager.change_master_password('masterpassword', 'newMasterPassword')
         expect(@password_manager.get_password_with_id(1).get_password('newMasterPassword')).to eq('password')
       end
-      
     end
     describe 'Databse' do
       it 'should close the database connection' do

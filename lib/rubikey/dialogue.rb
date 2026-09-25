@@ -4,6 +4,8 @@
 require_relative 'vars'
 
 module Rubikey
+  # Container for blocks of text. These get used by the Terminal class.
+  # By placing them here, it is much easier to change the display without searching the other classes.
   module Dialogue
     def self.welcome_message
       [
@@ -104,7 +106,7 @@ module Rubikey
     def self.password_selection_prompt
       [
         TextColor::BOLD + TextColor::RED + "\nEnter q to return to the main menu.\n",
-        TextColor::YELLOW + TextColor::BOLD + 'Enter an ID to reveal its password:',
+        TextColor::YELLOW + TextColor::BOLD + 'Enter an ID to reveal its password:'
       ]
     end
 
