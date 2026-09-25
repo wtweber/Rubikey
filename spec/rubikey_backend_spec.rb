@@ -149,8 +149,8 @@ RSpec.describe Rubikey do
       end
       it 'should be able to update master password and reencrypt all saved passwords' do
         @password_manager.add_password(@password)
-        @password_manager.change_master_password('masterPassword', 'newMasterPassword')
-        expect(@password_manager.get_password_with_id(1).get_password('newMasterpassword')).to eq('password')
+        @password_manager.change_master_password('masterpassword', 'newMasterPassword')
+        expect(@password_manager.get_password_with_id(1).get_password('newMasterPassword')).to eq('password')
       end
       
     end

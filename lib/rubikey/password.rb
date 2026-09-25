@@ -55,6 +55,11 @@ class Password
     @enc_password = PasswordCipher.encrypt(new_password, master_password)
   end
 
+  def reencrypt_password(master_password, new_master_password)
+    password = self.get_password(master_password)
+    self.update_password(password, new_master_password)
+  end
+
   # Decrypt stored pasword data using master password
   def get_password(master_password)
     PasswordCipher.decrypt(@enc_password, master_password)
