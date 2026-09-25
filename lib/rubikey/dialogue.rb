@@ -74,5 +74,24 @@ module Rubikey
         TextColor::YELLOW + TextColor::BOLD + 'Select an option:'
       ]
     end
+
+    def self.new_password_website
+      [
+        TextColor::GREEN + "\nNew password\n",
+        TextColor::YELLOW + TextColor::BOLD + 'Enter the website:'
+      ]
+    end
+
+    def self.new_password_username
+      [
+        TextColor::YELLOW + TextColor::BOLD + 'username:'
+      ]
+    end
+
+    def self.new_password_username
+      [
+        TextColor::YELLOW + TextColor::BOLD + 'Would you like to generate a password:'
+      ]
+    end
   end
 end
