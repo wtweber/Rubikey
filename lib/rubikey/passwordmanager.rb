@@ -75,5 +75,6 @@ class PasswordManager
       new_pw.reencrypt_password(master_password, new_master_password)
       update_password(new_pw)
     end
+    @master_password.update(master_password, new_master_password)
   end
 end

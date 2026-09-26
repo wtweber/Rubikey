@@ -152,6 +152,7 @@ RSpec.describe Rubikey do
         @password_manager.add_password(@password)
         @password_manager.change_master_password('masterpassword', 'newMasterPassword')
         expect(@password_manager.get_password_with_id(1).get_password('newMasterPassword')).to eq('password')
+        expect(@password_manager.master_password.decrypt(@password_manager.get_password_with_id(1).enc_password)).to eq('password')
       end
     end
     describe 'Databse' do

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'bcrypt'
+require_relative 'cipher'
 
 # Master password to store and retrieve the master password, as well as check input passwords against the stored hash
 class MasterPassword
@@ -31,6 +32,10 @@ class MasterPassword
     @password = new_password
     @hash = BCrypt::Password.create(new_password)
     MasterPassword.store(new_password)
+  end
+
+  def decrypt(enc_password)
+    PasswordCipher.decrypt(enc_password, @password)
   end
 
   # Store hash in mp.hash file

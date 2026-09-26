@@ -65,11 +65,13 @@ module Rubikey
       when '1'
         menu_message = new_password
       when '2'
-        menu_message = show_passwords
+        menu_message = show_passwords(@password_manager.all_passwords)
       when 'q'
         @password_manager.close
         break
-      when '3', '4'
+      when '3'
+        menu_message = show_passwords(@password_manager.get_passwords_for(search_site))
+      when '4'
         menu_message = Dialogue.option_not_available
       else
         menu_message = Dialogue.invalid_option
@@ -88,8 +90,8 @@ module Rubikey
     Dialogue.password_saved
   end
 
-  def self.show_passwords
-    passwords = @password_manager.all_passwords
+  def self.show_passwords(passwords)
+    #passwords = @password_manager.all_passwords
     return Dialogue.no_passwords_saved if passwords.empty?
 
     Terminal.output(*Dialogue.password_list_header)
@@ -107,11 +109,15 @@ module Rubikey
 
       password = passwords.find { |entry| entry.id.to_s == selection }
       if password
-        secret = password.get_password(@password_manager.master_password.password)
+        #secret = password.get_password(@password_manager.master_password.password)
+        secret = @password_manager.master_password.decrypt(password.enc_password)
         Terminal.output(*Dialogue.revealed_password(secret))
       else
         Terminal.output(*Dialogue.password_id_not_found)
       end
     end
+  end
+  def self.search_site
+    Terminal.prompt(*Dialogue.search_prompt)
   end
 end
