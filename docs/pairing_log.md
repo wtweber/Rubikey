@@ -7,11 +7,11 @@ Navigator: Will
 
 Work completed:
 - Draft for planning document (could change later as we work on it)
-- Draft for user stories (made 10, 2 are sad-path)
+- Draft for user stories (made 10; 2 are sad-path)
 - Added test cases for some acceptance criteria in user stories
 
 Notes:
-- User stories not complete, will revise later
+- User stories not complete; will revise later
 
 ## Session 2 — 2026-09-14
 
@@ -21,7 +21,7 @@ Navigator: Caleb
 Work completed:
 - Created first_timer function to prompt for initial master password
 - Created second_timer function to ask for the master password when the app detects one has already been set
-- second_timer exits the program on second failed attempt.
+- second_timer exits the program on the second failed attempt.
 - Created main menu for the application
 - Updated backlog for current project status.
 
@@ -32,8 +32,8 @@ Driver: Caleb
 Navigator: Will
 
 Work completed:
-- Created loop in first timer to handle when non matching passwords were input
-- Created tests for the userinterface
-- Updated github issues with points
+- Created a loop in first timer to handle when non-matching passwords were input
+- Created tests for the user interface
+- Updated GitHub issues with points
 - Moved terminal output strings to dialog module
-- Fixed multiple rubocop offences.
+- Fixed multiple RuboCop offences.
