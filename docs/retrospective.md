@@ -27,7 +27,7 @@
 
 ### What Was Difficult
 * We kept having difficulties meeting all of Rubocop's stylistic enforcement
-* RSpec tests: we sometimes make after the function instead of before to test its functionality
+* RSpec tests: we sometimes make it after the function instead of before to test its functionality
 * Keeping track of changes that were made to code you wrote at times was difficult.  At times, you'd come up with a solution to a problem only to realize that your code had been updated in a way that conflicted. 
 * Coordinating work schedules was difficult when we both have jobs and other commitments.
 * Writing accurate RSpec tests before you've figured out exactly how you're going to address the problem
