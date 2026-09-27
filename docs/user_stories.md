@@ -5,23 +5,23 @@
 * As a user, I want to store a password in a secure format for a website so that I can recall it later at any time.
 * **Acceptance Criteria**
     * Test Cases
-	    * Receive empty password string, return error.
+	    * Receive an empty password string, return an error.
 	    * Receive password string and master password, expect encrypted string
 
 ## User Story 2
 * 3 Points
-* As a user, I want to retrieve a stored password for a website so that I can login to that website.
+* As a user, I want to retrieve a stored password for a website so that I can log in to that website.
 * **Acceptance Criteria**
     * Test Cases
-        * Using master password, decrypt password string
-	    * Using incorrect password, try to decrypt password, expect error
+        * Using the master password, decrypt the password string
+	    * Using an incorrect password, try to decrypt the password; expect an error
 
 ## User Story 3
 * 5 Points
-* As a user, I want to search for a stored password by using the website name or URL so that I can login to that website.
+* As a user, I want to search for a stored password by using the website name or URL so that I can log in to that website.
 * **Acceptance Criteria**
     * Test Cases
-        * Start with nothing, search for X, expect X to be not found
+        * Start with nothing, search for X, expect X to not be found
 	    * Search for X website, expect X website’s password to be returned
 
 ## User Story 4
@@ -47,13 +47,13 @@
 * **Acceptance Criteria**
     * Test Cases
         * Prompt for confirmation (y/n)
-            * If yes, result is password deleted
-            * If no, exit deleting password
+            * If yes, the password is deleted
+            * If no, exit without deleting the password
 
 
 ## User Story 7
 * 3 Points
-* As a user, I want to display a list of all websites that I have a password for so that I don't have to search for the website, I can just search the list.
+* As a user, I want to display a list of all websites that I have a password for so that I don't have to search for the website; I can just search the list.
 * **Acceptance Criteria**
     * Test Cases
         * Display no passwords if there are none currently stored
@@ -75,7 +75,7 @@
 
 ## User Story 10
 * 3 Points
-* As a user, I want the application to require re-inputting the master password each time the app is closed -> re-opened, such that my passwords cannot be accessed by someone else if I accessed them before. (Sad path)
+* As a user, I want the application to require re-entering the master password each time the app is closed -> re-opened, such that my passwords cannot be accessed by someone else if I accessed them before. (Sad path)
 * **Acceptance Criteria**
     * Test Cases
-        * Receive incorrect password, expect error.
+        * Receive an incorrect password; expect error.
