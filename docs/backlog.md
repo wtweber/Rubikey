@@ -1,29 +1,21 @@
 # Backlog
-
-* Create database for passwords for storing/retrieve
-* Add submenus for features such as changing master password, listing passwords, searching, etc
+* Allow the user to change the password generation settings.
+* Allow the user to organize passwords into folders.
 
 # Status
-
-* Project has been successfully set up
-* Current implementation asks for / creates a master password, then boots to a main menu
-* Terminal interface class more or less completed
-* 3 User Stories completed, primarily with the master password
-    * Many user stories are waiting on password storage to be made.
+* All core functions are complete.
 
 ## To Do
-### User Story 6
-* 3 Points
-* As a user, I want to delete a stored password so that I do not store unnecessary passwords for websites I don't use anymore.
-
+### Stretch features
+* Allow the user to change the password generation settings.
+* Allow the user to organize passwords into folders.
 
 ## In Progress
-### User Story 1 (60% complete)
-* 5 Points
-* As a user, I want to store a password in a secure format for a website so that I can recall it later at any time.
-
         
 ## Done
+### User Story 1
+* 5 Points
+* As a user, I want to store a password in a secure format for a website so that I can recall it later at any time.
 ### User Story 4
 * 3 Points
 * As a user, I want to be able to set a master password such that I can encrypt my regular passwords.
@@ -48,7 +40,9 @@
 ### User Story 8
 * 5 Points
 * As a user, I want to be able to generate a complex password from the application itself so that I do not need to make it myself.
-        
+* ### User Story 6
+* 3 Points
+* As a user, I want to delete a stored password so that I do not store unnecessary passwords for websites I don't use anymore.
 
 
 
