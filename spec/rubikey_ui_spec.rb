@@ -68,7 +68,7 @@ RSpec.describe Rubikey do
       password_manager = instance_double(PasswordManager, close: nil)
       Rubikey.instance_variable_set(:@password_manager, password_manager)
       allow(Rubikey::Terminal).to receive(:prompt).and_return('4', 'q')
-      expect(Rubikey).to receive(:options)#.with(anything)
+      expect(Rubikey).to receive(:options) # .with(anything)
 
       Rubikey.main_menu
     end
@@ -245,7 +245,6 @@ RSpec.describe Rubikey do
       expect(password_manager).not_to receive(:change_master_password)
       expect(Rubikey.change_master_password).to be_nil
     end
-
   end
 
   describe '.first_timer' do

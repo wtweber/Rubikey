@@ -38,6 +38,7 @@ module Rubikey
       master_password_confirm = Terminal.password_prompt(*Dialogue.confirm_master_password_prompt)
 
       return master_password if master_password == master_password_confirm && !master_password.empty?
+
       master_password.empty? ? Terminal.output(*Dialogue.cant_be_empty) : Terminal.output(*Dialogue.passwords_do_not_match)
     end
   end
@@ -88,12 +89,17 @@ module Rubikey
   def self.new_password
     website = Terminal.prompt(*Dialogue.new_password_website)
     username = Terminal.prompt(*Dialogue.ask_username)
-    password_value = ['yes', 'y'].include?(Terminal.prompt(*Dialogue.ask_auto).downcase) ? Password.generate : Terminal.password_prompt(*Dialogue.ask_password)
-    
+    password_value = if %w[yes
+                           y].include?(Terminal.prompt(*Dialogue.ask_auto).downcase)
+                       Password.generate
+                     else
+                       Terminal.password_prompt(*Dialogue.ask_password)
+                     end
+
     # Store password as a Password Class
     password = Password.new(website: website, username: username)
     password.update_password(password_value, @password_manager.master_password.password)
-    
+
     # Save password in the password manager
     @password_manager.add_password(password)
     Dialogue.password_saved
@@ -101,7 +107,7 @@ module Rubikey
 
   # List the passwords provided
   def self.show_passwords(passwords)
-    #passwords = @password_manager.all_passwords
+    # passwords = @password_manager.all_passwords
     return Dialogue.no_passwords_saved if passwords.empty?
 
     Terminal.output(*Dialogue.password_list_header)
@@ -120,7 +126,7 @@ module Rubikey
       password = passwords.find { |entry| entry.id.to_s == selection }
       if password
         secret = password.get_password(@password_manager.master_password.password)
-        #secret = @password_manager.master_password.decrypt(password.enc_password)
+        # secret = @password_manager.master_password.decrypt(password.enc_password)
         Terminal.output(*Dialogue.revealed_password(secret))
       else
         Terminal.output(*Dialogue.password_id_not_found)
@@ -177,9 +183,10 @@ module Rubikey
   def self.change_master_password
     master = check_master_password_loop
     return if master.nil?
+
     password = new_password_loop
     @password_manager.change_master_password(master, password)
-    return
+    nil
   end
 
   # Pompt for master password and loop if its incorect
@@ -188,6 +195,7 @@ module Rubikey
       master_password = Terminal.password_prompt(*Dialogue.enter_master_password_prompt)
       break if master_password == 'q'
       return master_password if @password_manager.master_password.auth(master_password)
+
       Terminal.output(*Dialogue.passwords_do_not_match)
     end
   end
@@ -198,6 +206,7 @@ module Rubikey
       p_1 = Terminal.password_prompt(*Dialogue.create_master_password_prompt)
       p_2 = Terminal.password_prompt(*Dialogue.confirm_master_password_prompt)
       return p_1 if p_1 == p_2
+
       Terminal.output(*Dialogue.passwords_do_not_match)
     end
   end

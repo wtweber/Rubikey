@@ -104,7 +104,7 @@ module Rubikey
     end
 
     def self.cant_be_empty
-      [ TextColor::BOLD + TextColor::RED + "\nThis cannot be empty.\n",]
+      [TextColor::BOLD + TextColor::RED + "\nThis cannot be empty.\n"]
     end
 
     def self.password_list_header
@@ -157,6 +157,7 @@ module Rubikey
         TextColor::YELLOW + TextColor::BOLD + 'Search for site:'
       ]
     end
+
     def self.opt_menu
       [
         TextColor::YELLOW + "\nOptions menu\n",

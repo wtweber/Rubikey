@@ -5,7 +5,7 @@ require 'io/console'
 require_relative 'vars'
 
 module Rubikey
-  # Wrapper for outputting to terminal. 
+  # Wrapper for outputting to terminal.
   # This module automatically resets text between each received string.
   module Terminal
     def self.output(*messages)
