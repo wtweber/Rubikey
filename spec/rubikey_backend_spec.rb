@@ -34,6 +34,13 @@ RSpec.describe Rubikey do
         @password.username = 'newUserName'
         expect(@password.username).to eq('newUserName')
       end
+      it 'should update website' do
+        @password.website = 'www.example.com'
+        expect(@password.website).to eq('www.example.com')
+      end
+      it 'should reject an empty website when updating it' do
+        expect { @password.website = '' }.to raise_error(ArgumentError, 'Website can not be empty')
+      end
       it 'should set password' do
         expect(@password.get_password('masterpassword')).to eq('password')
       end

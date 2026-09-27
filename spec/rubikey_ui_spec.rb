@@ -36,8 +36,17 @@ RSpec.describe Rubikey do
       expect(password_manager).to have_received(:close)
     end
 
-    it 'opens the password list when option 2 is selected' do
+    it 'starts creating a password when option 1 is selected' do
       password_manager = instance_double(PasswordManager, close: nil)
+      Rubikey.instance_variable_set(:@password_manager, password_manager)
+      allow(Rubikey::Terminal).to receive(:prompt).and_return('1', 'q')
+      expect(Rubikey).to receive(:new_password).and_return(Rubikey::Dialogue.password_saved)
+
+      Rubikey.main_menu
+    end
+
+    it 'opens the password list when option 2 is selected' do
+      password_manager = instance_double(PasswordManager, close: nil, all_passwords: [])
       Rubikey.instance_variable_set(:@password_manager, password_manager)
       allow(Rubikey::Terminal).to receive(:prompt).and_return('2', 'q')
       expect(Rubikey).to receive(:show_passwords).with(any_args)
@@ -46,9 +55,9 @@ RSpec.describe Rubikey do
     end
 
     it 'opens the search list when option 3 is selected and a search input is given' do
-      password_manager = instance_double(PasswordManager, close: nil)
+      password_manager = instance_double(PasswordManager, close: nil, get_passwords_for: [])
       Rubikey.instance_variable_set(:@password_manager, password_manager)
-      allow(Rubikey::Terminal).to receive(:prompt).and_return('2', 'google', 'q')
+      allow(Rubikey::Terminal).to receive(:prompt).and_return('3', 'google', 'q')
       expect(Rubikey).to receive(:show_passwords).with(any_args)
 
       Rubikey.main_menu
@@ -85,6 +94,33 @@ RSpec.describe Rubikey do
       end
 
       expect { Rubikey.main_menu }.to output(/No passwords saved\..*Main menu/m).to_stdout
+    end
+  end
+
+  describe '.options' do
+    it 'reports an invalid option and returns to the main menu when q is selected' do
+      selections = %w[invalid q]
+      allow(Rubikey::Terminal).to receive(:prompt) do |*messages|
+        puts messages.join
+        selections.shift
+      end
+
+      expect { Rubikey.options }.to output(/Invalid option\..*Options menu/m).to_stdout
+    end
+
+    it 'changes the master password when option 1 is selected' do
+      allow(Rubikey::Terminal).to receive(:prompt).and_return('1', 'q')
+      expect(Rubikey).to receive(:change_master_password).and_return(Rubikey::Dialogue.password_saved)
+
+      expect { Rubikey.options }.to output(a_string_including('Password saved.')).to_stdout
+    end
+  end
+
+  describe '.dialogue' do
+    it 'provides the unavailable-option message' do
+      expect(Rubikey::Dialogue.option_not_available).to eq(
+        [Rubikey::TextColor::RED + 'That option is not available yet.']
+      )
     end
   end
 
@@ -130,6 +166,15 @@ RSpec.describe Rubikey do
       password_manager&.close
     end
 
+    it 'reports when the selected password ID does not exist' do
+      password = Password.new(website: 'example.com', username: 'alice', id: 1)
+      allow(Rubikey::Terminal).to receive(:prompt).and_return('404', 'q')
+
+      expect { Rubikey.show_passwords([password]) }.to output(
+        a_string_including('No saved password has that ID.')
+      ).to_stdout
+    end
+
     it 'colors the password label white and the revealed value blue' do
       expect(Rubikey::Dialogue.revealed_password('secret')).to eq(
         [Rubikey::TextColor::WHITE + 'Password: ', Rubikey::TextColor::BLUE + 'secret']
@@ -138,12 +183,39 @@ RSpec.describe Rubikey do
   end
 
   describe '.change_master_password' do
-    it '' do
+    it 'retries invalid credentials and mismatched confirmations before changing the password' do
       password_manager = PasswordManager.new(master_password: 'masterPassword', new_password: true)
       Rubikey.instance_variable_set(:@password_manager, password_manager)
       password = Password.new(website: 'example.com', username: 'alice')
       password.update_password('secret', 'masterPassword')
       password_manager.add_password(password)
+
+      allow(Rubikey::Terminal).to receive(:password_prompt).and_return(
+        'wrongMasterPassword',
+        'masterPassword',
+        'newMasterPassword',
+        'mismatchedPassword',
+        'newMasterPassword',
+        'newMasterPassword'
+      )
+
+      expect { Rubikey.change_master_password }.to output(
+        a_string_including('Password does not match. Please try again.')
+      ).to_stdout
+      expect(password_manager.get_password_with_id(password.id).get_password('newMasterPassword')).to eq('secret')
+      expect(password_manager.master_password.auth('newMasterPassword')).to be true
+    ensure
+      password_manager&.close
+    end
+
+    it 'cancels when q is entered instead of the current master password' do
+      master_password = instance_double(MasterPassword, auth: true)
+      password_manager = instance_double(PasswordManager, master_password: master_password)
+      Rubikey.instance_variable_set(:@password_manager, password_manager)
+      allow(Rubikey::Terminal).to receive(:password_prompt).and_return('q')
+
+      expect(password_manager).not_to receive(:change_master_password)
+      expect(Rubikey.change_master_password).to be_nil
     end
 
   end
@@ -230,6 +302,34 @@ RSpec.describe Rubikey do
       expect { Rubikey.second_timer }.to output(
         a_string_including('Too many failed attempts')
       ).to_stdout
+    end
+  end
+end
+
+RSpec.describe Rubikey::Terminal do
+  describe '.prompt' do
+    it 'prints the prompt and returns the entered value' do
+      allow(Rubikey::Terminal).to receive(:gets).and_return("alice\n")
+
+      expect do
+        expect(Rubikey::Terminal.prompt('Username:')).to eq('alice')
+      end.to output("Username:#{Rubikey::TextColor::RESET} ").to_stdout
+    end
+  end
+
+  describe '.password_prompt' do
+    it 'reads without echoing and returns the entered value' do
+      original_stdin = $stdin
+      input = double('stdin')
+      allow(input).to receive(:noecho) { |&block| block.call(input) }
+      allow(input).to receive(:gets).and_return("secret\n")
+      $stdin = input
+
+      expect do
+        expect(Rubikey::Terminal.password_prompt('Password:')).to eq('secret')
+      end.to output("Password:#{Rubikey::TextColor::RESET} ").to_stdout
+    ensure
+      $stdin = original_stdin
     end
   end
 end
