@@ -1,5 +1,5 @@
 # Rubikey
-Text based local password manager built in Ruby allowing for secure password generation and storage.
+Text-based local password manager built in Ruby, allowing for secure password generation and storage.
 
 * https://github.com/wtweber/Rubikey/tree/main
 
@@ -11,7 +11,7 @@ Text based local password manager built in Ruby allowing for secure password gen
 
 ## How to run tests for `Rubikey`
 * bundle exec rspec
-* also comes with coverage file in coverage/index.html
+* Also comes with a coverage file in coverage/index.html
 
 ## `Rubikey` features
 * Store Password
@@ -22,10 +22,12 @@ Text based local password manager built in Ruby allowing for secure password gen
 * Change master password
 
 ## Limitations
-
+* No way to customize or edit auto-generated passwords
+  
 ## Other
 * Rubocop ignores "Prefer String Interpolation to String Concatenation"
-    * The formatting for textcoloring / textstyles is much easier to read in Visual Studio Code because it [TextColor] is highlighted in a different color and also takes less special characters to write than string interpolation.
+    * The formatting for text coloring / textstyles is much easier to read in Visual Studio Code because it [TextColor] is highlighted in a different color and also takes fewer special characters to write than string interpolation.
+      
 ## Authors
 * Will Weber <wtweber@tamu.edu>
 * Caleb Austin <calebaustin01@tamu.edu>
