@@ -74,7 +74,7 @@ module Rubikey
       when '3' # Search Passwords
         menu_message = show_passwords(search_site(@password_manager.all_passwords), select_single: true)
       when '4' # Delete
-        #TODO: Delete menu
+        menu_message = show_passwords(@password_manager.all_passwords, delete: true)
       when '5' # Options
         menu_message = options
       when 'q' # Quit
@@ -130,11 +130,11 @@ module Rubikey
   end
 
   # List the passwords provided
-  def self.show_passwords(passwords, select_single: false)
+  def self.show_passwords(passwords, select_single: false, delete: false)
     # passwords = @password_manager.all_passwords
     return Dialogue.no_passwords_saved if passwords.empty?
 
-    Terminal.output(*Dialogue.password_list_header)
+    delete ? Terminal.output(*Dialogue.delete_header) : Terminal.output(*Dialogue.password_list_header)
     passwords.each.with_index do |password, index|
       Terminal.output(*Dialogue.password_list_entry(
         id: index + 1,
@@ -152,14 +152,17 @@ module Rubikey
     end
 
     loop do
-      selection = Terminal.prompt(*Dialogue.password_selection_prompt).downcase
+      selection = delete ? Terminal.prompt(*Dialogue.delete_prompt).downcase : Terminal.prompt(*Dialogue.password_selection_prompt).downcase
       return if selection == 'q'
 
       password = passwords[selection.to_i - 1]
       if password && selection.to_i > 0
-        secret = password.get_password(@password_manager.master_password.password)
-        # secret = @password_manager.master_password.decrypt(password.enc_password)
-        Terminal.output(*Dialogue.revealed_password(secret))
+        if !delete
+          secret = password.get_password(@password_manager.master_password.password)
+          Terminal.output(*Dialogue.revealed_password(secret))
+        else
+          confirm = Terminal.prompt(*Dialogue.confirm_delete(website: password.website, username: password.username)).downcase
+        end
       else
         Terminal.output(*Dialogue.password_id_not_found)
       end
