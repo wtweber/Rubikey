@@ -170,7 +170,7 @@ RSpec.describe Rubikey do
   end
 
   describe '.show_passwords' do
-    it 'lists account details and reveals the password after its ID is selected' do
+    it 'lists account details and reveals the password after its list number is selected' do
       password_manager = PasswordManager.new(master_password: 'masterPassword', new_password: true)
       Rubikey.instance_variable_set(:@password_manager, password_manager)
       password = Password.new(website: 'example.com', username: 'alice')
@@ -180,6 +180,25 @@ RSpec.describe Rubikey do
 
       expect { Rubikey.show_passwords(password_manager.all_passwords) }.to output(
         a_string_including('example.com', 'alice', 'Password: ', 'secret')
+      ).to_stdout
+    ensure
+      password_manager&.close
+    end
+
+    it 'selects by the displayed number when database IDs are not sequential' do
+      password_manager = PasswordManager.new(master_password: 'masterPassword', new_password: true)
+      Rubikey.instance_variable_set(:@password_manager, password_manager)
+      removed_password = Password.new(website: 'removed.com', username: 'alice')
+      removed_password.update_password('old-secret', 'masterPassword')
+      password_manager.add_password(removed_password)
+      password = Password.new(website: 'example.com', username: 'bob')
+      password.update_password('secret', 'masterPassword')
+      password_manager.add_password(password)
+      password_manager.remove_password(removed_password)
+      allow(Rubikey::Terminal).to receive(:prompt).and_return('1', 'q')
+
+      expect { Rubikey.show_passwords(password_manager.all_passwords) }.to output(
+        a_string_including('1. example.com', 'secret')
       ).to_stdout
     ensure
       password_manager&.close
@@ -197,6 +216,36 @@ RSpec.describe Rubikey do
         Rubikey.show_passwords(password_manager.all_passwords, select_single: true)
       end.to output(a_string_including('Password: ', 'secret')).to_stdout
       expect(Rubikey::Terminal).to have_received(:prompt).with(*Rubikey::Dialogue.password_revealed_prompt)
+    ensure
+      password_manager&.close
+    end
+
+    it 'deletes the selected password after revealing it' do
+      password_manager = PasswordManager.new(master_password: 'masterPassword', new_password: true)
+      Rubikey.instance_variable_set(:@password_manager, password_manager)
+      password = Password.new(website: 'example.com', username: 'alice')
+      password.update_password('secret', 'masterPassword')
+      password_manager.add_password(password)
+      allow(Rubikey::Terminal).to receive(:prompt).and_return(password.id.to_s, 'd')
+
+      expect(Rubikey.show_passwords(password_manager.all_passwords)).to eq(Rubikey::Dialogue.password_deleted)
+      expect(password_manager.all_passwords).to be_empty
+    ensure
+      password_manager&.close
+    end
+
+    it 'deletes the only search result after revealing it' do
+      password_manager = PasswordManager.new(master_password: 'masterPassword', new_password: true)
+      Rubikey.instance_variable_set(:@password_manager, password_manager)
+      password = Password.new(website: 'example.com', username: 'alice')
+      password.update_password('secret', 'masterPassword')
+      password_manager.add_password(password)
+      allow(Rubikey::Terminal).to receive(:prompt).and_return('d')
+
+      expect(Rubikey.show_passwords(password_manager.all_passwords, select_single: true)).to eq(
+        Rubikey::Dialogue.password_deleted
+      )
+      expect(password_manager.all_passwords).to be_empty
     ensure
       password_manager&.close
     end
