@@ -144,6 +144,10 @@ module Rubikey
       [TextColor::WHITE + 'Password: ', TextColor::BLUE + password]
     end
 
+    def self.password_revealed_prompt
+      [TextColor::RED + TextColor::BOLD + 'Enter q to return to the main menu:']
+    end
+
     def self.password_id_not_found
       [TextColor::RED + 'No saved password has that ID.']
     end
