@@ -5,11 +5,11 @@
 
 # Status
 
-* Project has been successfully setup
+* Project has been successfully set up
 * Current implementation asks for / creates a master password, then boots to a main menu
 * Terminal interface class more or less completed
 * 3 User Stories completed, primarily with the master password
-    * Many user stories are waiting on password storing to be made.
+    * Many user stories are waiting on password storage to be made.
 
 ## To Do
 ### User Story 6
@@ -29,22 +29,22 @@
 * As a user, I want to be able to set a master password such that I can encrypt my regular passwords.
 ### User Story 9
 * 3 Points
-* As a user, I want the application to deny access to my passwords if I do not know the master password, such that my passwords remain secure from an invalid access. (Sad path)
+* As a user, I want the application to deny access to my passwords if I do not know the master password, such that my passwords remain secure from invalid access. (Sad path)
 ### User Story 10
 * 3 Points
-* As a user, I want the application to require re-inputting the master password each time the app is closed -> re-opened, such that my passwords cannot be accessed by someone else if I accessed them before. (Sad path)
+* As a user, I want the application to require re-entering the master password each time the app is closed -> re-opened, such that my passwords cannot be accessed by someone else if I accessed them before. (Sad path)
 ### User Story 2
 * 3 Points
-* As a user, I want to retrieve a stored password for a website so that I can login to that website.
+* As a user, I want to retrieve a stored password for a website so that I can log in to that website.
 ### User Story 3
 * 5 Points
-* As a user, I want to search for a stored password by using the website name or URL so that I can login to that website.
+* As a user, I want to search for a stored password by using the website name or URL so that I can log in to that website.
 ### User Story 5
 * 8 Points
 * As a user, I want to be able to change the master password in case I accidentally used that password elsewhere, and want to re-secure this application with a new one.
 ### User Story 7
 * 3 Points
-* As a user, I want to display a list of all websites that I have a password for so that I don't have to search for the website, I can just search the list.
+* As a user, I want to display a list of all websites that I have a password for so that I don't have to search for the website; I can just search the list.
 ### User Story 8
 * 5 Points
 * As a user, I want to be able to generate a complex password from the application itself so that I do not need to make it myself.
