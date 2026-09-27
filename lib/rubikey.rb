@@ -73,7 +73,9 @@ module Rubikey
         menu_message = show_passwords(@password_manager.all_passwords)
       when '3' # Search Passwords
         menu_message = show_passwords(search_site(@password_manager.all_passwords), select_single: true)
-      when '4' # Options
+      when '4' # Delete
+        #TODO: Delete menu
+      when '5' # Options
         menu_message = options
       when 'q' # Quit
         Terminal.clear
@@ -87,15 +89,37 @@ module Rubikey
 
   # Prompts to save a new password
   def self.new_password
-    website = Terminal.prompt(*Dialogue.new_password_website)
-    username = Terminal.prompt(*Dialogue.ask_username)
+    #prompt for website and loop until its not empty
+    website = ''
+    loop do
+      website = Terminal.prompt(*Dialogue.new_password_website)
+      break if !website.empty?
+      Terminal.output(*Dialogue.cant_be_empty)
+    end
+    
+    #prompt for username and loop until its not empty
+    username = ''
+    loop do
+      username = Terminal.prompt(*Dialogue.ask_username)
+      break if !username.empty?
+      Terminal.output(*Dialogue.cant_be_empty)
+    end
+    
+    # Prompt for password or auto
     password_value = if %w[yes
                            y].include?(Terminal.prompt(*Dialogue.ask_auto).downcase)
                        Password.generate
                      else
                        Terminal.password_prompt(*Dialogue.ask_password)
                      end
-
+    
+    # Loop until the password isnt empty
+    loop do
+      break if !password_value.empty?
+      Terminal.output(*Dialogue.cant_be_empty)
+      password_value = Terminal.password_prompt(*Dialogue.ask_password)
+    end
+    
     # Store password as a Password Class
     password = Password.new(website: website, username: username)
     password.update_password(password_value, @password_manager.master_password.password)
@@ -111,9 +135,9 @@ module Rubikey
     return Dialogue.no_passwords_saved if passwords.empty?
 
     Terminal.output(*Dialogue.password_list_header)
-    passwords.each do |password|
+    passwords.each.with_index do |password, index|
       Terminal.output(*Dialogue.password_list_entry(
-        id: password.id,
+        id: index + 1,
         website: password.website,
         username: password.username
       ))
@@ -127,7 +151,7 @@ module Rubikey
       selection = Terminal.prompt(*Dialogue.password_selection_prompt).downcase
       return if selection == 'q'
 
-      password = passwords.find { |entry| entry.id.to_s == selection }
+      password = passwords[selection.to_i - 1] if selection.match?(/\A[1-9]\d*\z/)
       if password
         return reveal_password(password)
       else
@@ -165,9 +189,9 @@ module Rubikey
         Terminal.output(*Dialogue.no_search_results)
       else
         Terminal.output(*Dialogue.password_list_header)
-        matching_passwords.each do |password|
+        matching_passwords.each.with_index do |password, index|
           Terminal.output(*Dialogue.password_list_entry(
-            id: password.id,
+            id: index + 1,
             website: password.website,
             username: password.username
           ))
