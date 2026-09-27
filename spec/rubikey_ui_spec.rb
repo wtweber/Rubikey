@@ -64,10 +64,19 @@ RSpec.describe Rubikey do
       Rubikey.main_menu
     end
 
-    it 'opens the options when option 4 is selected' do
-      password_manager = instance_double(PasswordManager, close: nil)
+    it 'opens password deletion when option 4 is selected' do
+      password_manager = instance_double(PasswordManager, close: nil, all_passwords: [])
       Rubikey.instance_variable_set(:@password_manager, password_manager)
       allow(Rubikey::Terminal).to receive(:prompt).and_return('4', 'q')
+      expect(Rubikey).to receive(:show_passwords).with([], delete: true)
+
+      Rubikey.main_menu
+    end
+
+    it 'opens the options when option 5 is selected' do
+      password_manager = instance_double(PasswordManager, close: nil)
+      Rubikey.instance_variable_set(:@password_manager, password_manager)
+      allow(Rubikey::Terminal).to receive(:prompt).and_return('5', 'q')
       expect(Rubikey).to receive(:options) # .with(anything)
 
       Rubikey.main_menu
@@ -185,6 +194,24 @@ RSpec.describe Rubikey do
       password_manager&.close
     end
 
+    it 'reveals another search result when its list number is entered at the reveal prompt' do
+      password_manager = PasswordManager.new(master_password: 'masterPassword', new_password: true)
+      Rubikey.instance_variable_set(:@password_manager, password_manager)
+      first_password = Password.new(website: 'first.com', username: 'alice')
+      first_password.update_password('first-secret', 'masterPassword')
+      password_manager.add_password(first_password)
+      second_password = Password.new(website: 'second.com', username: 'bob')
+      second_password.update_password('second-secret', 'masterPassword')
+      password_manager.add_password(second_password)
+      allow(Rubikey::Terminal).to receive(:prompt).and_return('1', '2', 'q')
+
+      expect { Rubikey.show_passwords(password_manager.all_passwords, select_single: true) }.to output(
+        a_string_including('first-secret', 'second-secret')
+      ).to_stdout
+    ensure
+      password_manager&.close
+    end
+
     it 'selects by the displayed number when database IDs are not sequential' do
       password_manager = PasswordManager.new(master_password: 'masterPassword', new_password: true)
       Rubikey.instance_variable_set(:@password_manager, password_manager)
@@ -226,10 +253,13 @@ RSpec.describe Rubikey do
       password = Password.new(website: 'example.com', username: 'alice')
       password.update_password('secret', 'masterPassword')
       password_manager.add_password(password)
-      allow(Rubikey::Terminal).to receive(:prompt).and_return(password.id.to_s, 'd')
+      allow(Rubikey::Terminal).to receive(:prompt).and_return(password.id.to_s, 'd', 'y')
 
       expect(Rubikey.show_passwords(password_manager.all_passwords)).to eq(Rubikey::Dialogue.password_deleted)
       expect(password_manager.all_passwords).to be_empty
+      expect(Rubikey::Terminal).to have_received(:prompt).with(
+        *Rubikey::Dialogue.confirm_delete(website: 'example.com', username: 'alice')
+      )
     ensure
       password_manager&.close
     end
@@ -240,12 +270,34 @@ RSpec.describe Rubikey do
       password = Password.new(website: 'example.com', username: 'alice')
       password.update_password('secret', 'masterPassword')
       password_manager.add_password(password)
-      allow(Rubikey::Terminal).to receive(:prompt).and_return('d')
+      allow(Rubikey::Terminal).to receive(:prompt).and_return('d', 'y')
 
       expect(Rubikey.show_passwords(password_manager.all_passwords, select_single: true)).to eq(
         Rubikey::Dialogue.password_deleted
       )
       expect(password_manager.all_passwords).to be_empty
+      expect(Rubikey::Terminal).to have_received(:prompt).with(
+        *Rubikey::Dialogue.confirm_delete(website: 'example.com', username: 'alice')
+      )
+    ensure
+      password_manager&.close
+    end
+
+    it 'deletes from the delete menu and redraws the remaining passwords' do
+      password_manager = PasswordManager.new(master_password: 'masterPassword', new_password: true)
+      Rubikey.instance_variable_set(:@password_manager, password_manager)
+      first_password = Password.new(website: 'first.com', username: 'alice')
+      first_password.update_password('first-secret', 'masterPassword')
+      password_manager.add_password(first_password)
+      second_password = Password.new(website: 'second.com', username: 'bob')
+      second_password.update_password('second-secret', 'masterPassword')
+      password_manager.add_password(second_password)
+      allow(Rubikey::Terminal).to receive(:prompt).and_return('1', 'y', 'q')
+
+      expect { Rubikey.show_passwords(password_manager.all_passwords, delete: true) }.to output(
+        a_string_including('Password deleted.', '1. second.com | usr: <bob>')
+      ).to_stdout
+      expect(password_manager.all_passwords.map(&:website)).to eq(['second.com'])
     ensure
       password_manager&.close
     end

@@ -47,12 +47,14 @@ class PasswordManager
 
   # Get passwords for specific website
   def get_passwords_for(site)
-    @database.execute('SELECT * FROM passwords WHERE website = ? ORDER BY website', site).map { |row| Password.new_from_db(row) }
+    @database.execute('SELECT * FROM passwords WHERE website = ? ORDER BY website', site).map do |row|
+      Password.new_from_db(row)
+    end
   end
 
   # Get all passwords from database
   def all_passwords
-    @database.execute('SELECT * FROM passwords ORDER BY website' ).map { |row| Password.new_from_db(row) }
+    @database.execute('SELECT * FROM passwords ORDER BY website').map { |row| Password.new_from_db(row) }
   end
 
   # Delete a specific Password instance from the database
