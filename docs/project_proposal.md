@@ -5,7 +5,7 @@
 ## App name
 * Rubikey
 ## App description
-* This app will be a password manager with secure storage and customizable password generation rules. Passwords will be stored in a local database as encrypted strings, allowing for decryption with a user set master password.
+* This app will be a password manager with secure storage and customizable password generation rules. Passwords will be stored in a local database as encrypted strings, allowing for decryption with a user-set master password.
 ## Intended user
 * Someone who wants a password manager that doesn't store passwords in the cloud.
 ## Core features
@@ -31,7 +31,7 @@
 	* Receive password string and master password, expect encrypted string
 * Retrieve password
 	* Using master password, decrypt password string
-	* Using incorrect password, try to decrypt password, expect error
+	* Using an incorrect password, try to decrypt password; expect an error
 * Password Generation
 	* Generate new password, expect new password string
 * Search for passwords
