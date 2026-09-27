@@ -87,15 +87,37 @@ module Rubikey
 
   # Prompts to save a new password
   def self.new_password
-    website = Terminal.prompt(*Dialogue.new_password_website)
-    username = Terminal.prompt(*Dialogue.ask_username)
+    #prompt for website and loop until its not empty
+    website = ''
+    loop do
+      website = Terminal.prompt(*Dialogue.new_password_website)
+      break if !website.empty?
+      Terminal.output(*Dialogue.cant_be_empty)
+    end
+    
+    #prompt for username and loop until its not empty
+    username = ''
+    loop do
+      username = Terminal.prompt(*Dialogue.ask_username)
+      break if !username.empty?
+      Terminal.output(*Dialogue.cant_be_empty)
+    end
+    
+    # Prompt for password or auto
     password_value = if %w[yes
                            y].include?(Terminal.prompt(*Dialogue.ask_auto).downcase)
                        Password.generate
                      else
                        Terminal.password_prompt(*Dialogue.ask_password)
                      end
-
+    
+    # Loop until the password isnt empty
+    loop do
+      break if !password_value.empty?
+      Terminal.output(*Dialogue.cant_be_empty)
+      password_value = Terminal.password_prompt(*Dialogue.ask_password)
+    end
+    
     # Store password as a Password Class
     password = Password.new(website: website, username: username)
     password.update_password(password_value, @password_manager.master_password.password)
