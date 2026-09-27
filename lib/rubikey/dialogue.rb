@@ -146,11 +146,14 @@ module Rubikey
     end
 
     def self.password_revealed_prompt
-      [TextColor::RED + TextColor::BOLD + 'Enter d to delete this password or q to return to the main menu:']
+      [
+        TextColor::RED + TextColor::BOLD + "Enter d to delete this password or q to return to the main menu.\n",
+        TextColor::YELLOW + TextColor::BOLD + 'Enter an ID to reveal another password:'
+      ]
     end
 
     def self.password_deleted
-      [TextColor::GREEN + 'Password deleted.']
+      [TextColor::GREEN + "Password deleted.\n"]
     end
 
     def self.password_id_not_found
@@ -177,11 +180,13 @@ module Rubikey
     end
 
     def self.confirm_delete(website:, username:)
-      [TextColor::RED + TextColor::BOLD + "CONFFIRM YOU WANT TO DELETE: #{website} | usr: <#{username}>? (Y/N)"]
+      [TextColor::RED + TextColor::BOLD + "CONFIRM YOU WANT TO DELETE: #{website} | usr: <#{username}>? (Y/N)"]
     end
+
     def self.delete_header
       [TextColor::RED + TextColor::BOLD + "\nDELETE PASSWORDS\n"]
     end
+
     def self.delete_prompt
       [
         TextColor::BOLD + TextColor::RED + "\nEnter q to return to the main menu.\n",

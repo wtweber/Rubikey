@@ -89,22 +89,24 @@ module Rubikey
 
   # Prompts to save a new password
   def self.new_password
-    #prompt for website and loop until its not empty
+    # prompt for website and loop until its not empty
     website = ''
     loop do
       website = Terminal.prompt(*Dialogue.new_password_website)
-      break if !website.empty?
+      break unless website.empty?
+
       Terminal.output(*Dialogue.cant_be_empty)
     end
-    
-    #prompt for username and loop until its not empty
+
+    # prompt for username and loop until its not empty
     username = ''
     loop do
       username = Terminal.prompt(*Dialogue.ask_username)
-      break if !username.empty?
+      break unless username.empty?
+
       Terminal.output(*Dialogue.cant_be_empty)
     end
-    
+
     # Prompt for password or auto
     password_value = if %w[yes
                            y].include?(Terminal.prompt(*Dialogue.ask_auto).downcase)
@@ -112,14 +114,15 @@ module Rubikey
                      else
                        Terminal.password_prompt(*Dialogue.ask_password)
                      end
-    
+
     # Loop until the password isnt empty
     loop do
-      break if !password_value.empty?
+      break unless password_value.empty?
+
       Terminal.output(*Dialogue.cant_be_empty)
       password_value = Terminal.password_prompt(*Dialogue.ask_password)
     end
-    
+
     # Store password as a Password Class
     password = Password.new(website: website, username: username)
     password.update_password(password_value, @password_manager.master_password.password)
@@ -131,52 +134,76 @@ module Rubikey
 
   # List the passwords provided
   def self.show_passwords(passwords, select_single: false, delete: false)
-    # passwords = @password_manager.all_passwords
     return Dialogue.no_passwords_saved if passwords.empty?
 
-    delete ? Terminal.output(*Dialogue.delete_header) : Terminal.output(*Dialogue.password_list_header)
-    passwords.each.with_index do |password, index|
-      Terminal.output(*Dialogue.password_list_entry(
-        id: index + 1,
-        website: password.website,
-        username: password.username
-      ))
-    end
-
-    if select_single && passwords.one?
-      return reveal_password(passwords.first)
-    end
-
+    message = nil
     loop do
+      if delete
+        Terminal.clear
+        Terminal.output(*message) if message
+      end
+      Terminal.output(*(delete ? Dialogue.delete_header : Dialogue.password_list_header))
+      passwords.each.with_index do |password, index|
+        Terminal.output(*Dialogue.password_list_entry(
+          id: index + 1,
+          website: password.website,
+          username: password.username
+        ))
+      end
+
+      return reveal_password(passwords.first, passwords) if select_single && passwords.one?
+
       selection = delete ? Terminal.prompt(*Dialogue.delete_prompt).downcase : Terminal.prompt(*Dialogue.password_selection_prompt).downcase
       return if selection == 'q'
 
-      password = passwords[selection.to_i - 1]
-      if password && selection.to_i > 0
-        if !delete
-          secret = password.get_password(@password_manager.master_password.password)
-          Terminal.output(*Dialogue.revealed_password(secret))
-        else
-          confirm = Terminal.prompt(*Dialogue.confirm_delete(website: password.website, username: password.username)).downcase
+      password = passwords[selection.to_i - 1] if selection.match?(/\A[1-9]\d*\z/)
+      if password
+        return reveal_password(password, passwords) unless delete
+
+        if delete_password(password)
+          passwords = @password_manager.all_passwords
+          message = Dialogue.password_deleted
+          return message + Dialogue.no_passwords_saved if passwords.empty?
         end
+
+
+
+      elsif delete
+        message = Dialogue.password_id_not_found
       else
         Terminal.output(*Dialogue.password_id_not_found)
       end
     end
   end
 
-  def self.reveal_password(password)
-    secret = password.get_password(@password_manager.master_password.password)
-    Terminal.output(*Dialogue.revealed_password(secret))
-
+  def self.reveal_password(password, passwords)
     loop do
+      secret = password.get_password(@password_manager.master_password.password)
+      Terminal.output(*Dialogue.revealed_password(secret))
       selection = Terminal.prompt(*Dialogue.password_revealed_prompt).downcase
       return if selection == 'q'
 
       if selection == 'd'
-        @password_manager.remove_password(password)
-        return Dialogue.password_deleted
+        return Dialogue.password_deleted if delete_password(password)
+      else
+        selected_password = passwords[selection.to_i - 1] if selection.match?(/\A[1-9]\d*\z/)
+        if selected_password
+          password = selected_password
+        else
+          Terminal.output(*Dialogue.password_id_not_found)
+        end
       end
+    end
+  end
+
+  def self.delete_password(password)
+    loop do
+      selection = Terminal.prompt(*Dialogue.confirm_delete(
+        website: password.website,
+        username: password.username
+      )).downcase
+      return false if %w[n no].include?(selection)
+      return @password_manager.remove_password(password) if %w[y yes].include?(selection)
 
       Terminal.output(*Dialogue.invalid_option)
     end
