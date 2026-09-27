@@ -18,6 +18,30 @@ module Rubikey
       gets.chomp
     end
 
+    def self.prompt_live(*messages)
+      query = +''
+      loop do
+        clear
+        print messages.map { |message| "#{message}#{TextColor::RESET}" }.join
+        puts "#{query} "
+        yield query
+
+        character = getch
+        if ["\r", "\n"].include?(character)
+          puts
+          return query
+        elsif ["\b", "\u007F"].include?(character)
+          query.chop! unless query.empty?
+        elsif character.match?(/\A[[:print:]]\z/)
+          query << character
+        end
+      end
+    end
+
+    def self.getch
+      $stdin.getch
+    end
+
     def self.password_prompt(*messages)
       print messages.map { |message| "#{message}#{TextColor::RESET}" }.join
       print ' '

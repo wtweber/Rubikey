@@ -147,6 +147,11 @@ module Rubikey
     def self.password_id_not_found
       [TextColor::RED + 'No saved password has that ID.']
     end
+
+    def self.no_search_results
+      [TextColor::YELLOW + 'No matching passwords.']
+    end
+
     def self.search_prompt
       [
         TextColor::YELLOW + TextColor::BOLD + 'Search for site:'

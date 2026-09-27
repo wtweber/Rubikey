@@ -71,7 +71,7 @@ module Rubikey
       when '2' # Show Passwords
         menu_message = show_passwords(@password_manager.all_passwords)
       when '3' # Search Passwords
-        menu_message = show_passwords(@password_manager.get_passwords_for(search_site))
+        menu_message = show_passwords(search_site(@password_manager.all_passwords))
       when '4' # Options
         menu_message = options
       when 'q' # Quit
@@ -128,9 +128,28 @@ module Rubikey
     end
   end
 
-  # Prompt for site to search for
-  def self.search_site
-    Terminal.prompt(*Dialogue.search_prompt)
+  # Show matching passwords as the search query changes
+  def self.search_site(passwords)
+    matching_passwords = []
+    Terminal.prompt_live(*Dialogue.search_prompt) do |query|
+      matching_passwords = passwords.select do |password|
+        password.website.downcase.include?(query.downcase)
+      end
+
+      if matching_passwords.empty?
+        Terminal.output(*Dialogue.no_search_results)
+      else
+        Terminal.output(*Dialogue.password_list_header)
+        matching_passwords.each do |password|
+          Terminal.output(*Dialogue.password_list_entry(
+            id: password.id,
+            website: password.website,
+            username: password.username
+          ))
+        end
+      end
+    end
+    matching_passwords
   end
 
   # Display options menu and handle responce

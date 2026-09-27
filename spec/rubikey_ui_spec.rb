@@ -55,10 +55,11 @@ RSpec.describe Rubikey do
     end
 
     it 'opens the search list when option 3 is selected and a search input is given' do
-      password_manager = instance_double(PasswordManager, close: nil, get_passwords_for: [])
+      password_manager = instance_double(PasswordManager, close: nil, all_passwords: [])
       Rubikey.instance_variable_set(:@password_manager, password_manager)
-      allow(Rubikey::Terminal).to receive(:prompt).and_return('3', 'google', 'q')
-      expect(Rubikey).to receive(:show_passwords).with(any_args)
+      allow(Rubikey::Terminal).to receive(:prompt).and_return('3', 'q')
+      expect(Rubikey).to receive(:search_site).with([]).and_return([])
+      expect(Rubikey).to receive(:show_passwords).with([])
 
       Rubikey.main_menu
     end
@@ -121,6 +122,33 @@ RSpec.describe Rubikey do
       expect(Rubikey::Dialogue.option_not_available).to eq(
         [Rubikey::TextColor::RED + 'That option is not available yet.']
       )
+    end
+  end
+
+  describe '.search_site' do
+    it 'shows case-insensitive partial matches as the query is typed' do
+      passwords = [
+        Password.new(website: 'google.com', username: 'rudy', id: 1),
+        Password.new(website: 'github.com', username: 'dess', id: 2),
+        Password.new(website: 'example.com', username: 'carol', id: 3)
+      ]
+      updates = []
+      allow(Rubikey::Terminal).to receive(:getch).and_return('g', 'o', 'o', "\r")
+      allow(Rubikey::Terminal).to receive(:output) do |*messages|
+        if messages == Rubikey::Dialogue.password_list_header
+          updates << []
+        else
+          updates.last << messages.join
+        end
+      end
+      results = nil
+
+      expect { results = Rubikey.search_site(passwords) }.to output.to_stdout
+
+      expect(updates[1].join).to include('github.com')
+      expect(updates.last.join).to include('google.com')
+      expect(updates.last.join).not_to include('github.com')
+      expect(results.map(&:website)).to eq(['google.com'])
     end
   end
 
@@ -307,6 +335,31 @@ RSpec.describe Rubikey do
 end
 
 RSpec.describe Rubikey::Terminal do
+  describe '.prompt_live' do
+    it 'renders live results below the prompt and typed query' do
+      allow(Rubikey::Terminal).to receive(:getch).and_return("\r")
+
+      expect do
+        Rubikey::Terminal.prompt_live('Search:') do
+          Rubikey::Terminal.output('No matching passwords.')
+        end
+      end.to output(/Search:#{Regexp.escape(Rubikey::TextColor::RESET)} \nNo matching passwords\./).to_stdout
+    end
+
+    it 'updates the query for typed and deleted characters until Enter' do
+      allow(Rubikey::Terminal).to receive(:getch).and_return('a', 'b', "\u007F", 'c', "\r")
+      queries = []
+      result = nil
+
+      expect do
+        result = Rubikey::Terminal.prompt_live('Search:') { |query| queries << query.dup }
+      end.to output.to_stdout
+
+      expect(queries).to eq(['', 'a', 'ab', 'a', 'ac'])
+      expect(result).to eq('ac')
+    end
+  end
+
   describe '.prompt' do
     it 'prints the prompt and returns the entered value' do
       allow(Rubikey::Terminal).to receive(:gets).and_return("alice\n")
