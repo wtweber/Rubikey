@@ -120,11 +120,7 @@ module Rubikey
     end
 
     if select_single && passwords.one?
-      secret = passwords.first.get_password(@password_manager.master_password.password)
-      Terminal.output(*Dialogue.revealed_password(secret))
-      loop do
-        return if Terminal.prompt(*Dialogue.password_revealed_prompt).downcase == 'q'
-      end
+      return reveal_password(passwords.first)
     end
 
     loop do
@@ -133,12 +129,27 @@ module Rubikey
 
       password = passwords.find { |entry| entry.id.to_s == selection }
       if password
-        secret = password.get_password(@password_manager.master_password.password)
-        # secret = @password_manager.master_password.decrypt(password.enc_password)
-        Terminal.output(*Dialogue.revealed_password(secret))
+        return reveal_password(password)
       else
         Terminal.output(*Dialogue.password_id_not_found)
       end
+    end
+  end
+
+  def self.reveal_password(password)
+    secret = password.get_password(@password_manager.master_password.password)
+    Terminal.output(*Dialogue.revealed_password(secret))
+
+    loop do
+      selection = Terminal.prompt(*Dialogue.password_revealed_prompt).downcase
+      return if selection == 'q'
+
+      if selection == 'd'
+        @password_manager.remove_password(password)
+        return Dialogue.password_deleted
+      end
+
+      Terminal.output(*Dialogue.invalid_option)
     end
   end
 

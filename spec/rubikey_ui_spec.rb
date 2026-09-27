@@ -201,6 +201,36 @@ RSpec.describe Rubikey do
       password_manager&.close
     end
 
+    it 'deletes the selected password after revealing it' do
+      password_manager = PasswordManager.new(master_password: 'masterPassword', new_password: true)
+      Rubikey.instance_variable_set(:@password_manager, password_manager)
+      password = Password.new(website: 'example.com', username: 'alice')
+      password.update_password('secret', 'masterPassword')
+      password_manager.add_password(password)
+      allow(Rubikey::Terminal).to receive(:prompt).and_return(password.id.to_s, 'd')
+
+      expect(Rubikey.show_passwords(password_manager.all_passwords)).to eq(Rubikey::Dialogue.password_deleted)
+      expect(password_manager.all_passwords).to be_empty
+    ensure
+      password_manager&.close
+    end
+
+    it 'deletes the only search result after revealing it' do
+      password_manager = PasswordManager.new(master_password: 'masterPassword', new_password: true)
+      Rubikey.instance_variable_set(:@password_manager, password_manager)
+      password = Password.new(website: 'example.com', username: 'alice')
+      password.update_password('secret', 'masterPassword')
+      password_manager.add_password(password)
+      allow(Rubikey::Terminal).to receive(:prompt).and_return('d')
+
+      expect(Rubikey.show_passwords(password_manager.all_passwords, select_single: true)).to eq(
+        Rubikey::Dialogue.password_deleted
+      )
+      expect(password_manager.all_passwords).to be_empty
+    ensure
+      password_manager&.close
+    end
+
     it 'reports when no passwords are saved' do
       password_manager = PasswordManager.new(master_password: 'masterPassword', new_password: true)
       Rubikey.instance_variable_set(:@password_manager, password_manager)

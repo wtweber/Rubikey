@@ -145,7 +145,11 @@ module Rubikey
     end
 
     def self.password_revealed_prompt
-      [TextColor::RED + TextColor::BOLD + 'Enter q to return to the main menu:']
+      [TextColor::RED + TextColor::BOLD + 'Enter d to delete this password or q to return to the main menu:']
+    end
+
+    def self.password_deleted
+      [TextColor::GREEN + 'Password deleted.']
     end
 
     def self.password_id_not_found
