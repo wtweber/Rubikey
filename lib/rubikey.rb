@@ -72,7 +72,7 @@ module Rubikey
       when '2' # Show Passwords
         menu_message = show_passwords(@password_manager.all_passwords)
       when '3' # Search Passwords
-        menu_message = show_passwords(search_site(@password_manager.all_passwords))
+        menu_message = show_passwords(search_site(@password_manager.all_passwords), select_single: true)
       when '4' # Options
         menu_message = options
       when 'q' # Quit
@@ -106,7 +106,7 @@ module Rubikey
   end
 
   # List the passwords provided
-  def self.show_passwords(passwords)
+  def self.show_passwords(passwords, select_single: false)
     # passwords = @password_manager.all_passwords
     return Dialogue.no_passwords_saved if passwords.empty?
 
@@ -117,6 +117,14 @@ module Rubikey
         website: password.website,
         username: password.username
       ))
+    end
+
+    if select_single && passwords.one?
+      secret = passwords.first.get_password(@password_manager.master_password.password)
+      Terminal.output(*Dialogue.revealed_password(secret))
+      loop do
+        return if Terminal.prompt(*Dialogue.password_revealed_prompt).downcase == 'q'
+      end
     end
 
     loop do

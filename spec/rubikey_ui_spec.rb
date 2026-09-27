@@ -59,7 +59,7 @@ RSpec.describe Rubikey do
       Rubikey.instance_variable_set(:@password_manager, password_manager)
       allow(Rubikey::Terminal).to receive(:prompt).and_return('3', 'q')
       expect(Rubikey).to receive(:search_site).with([]).and_return([])
-      expect(Rubikey).to receive(:show_passwords).with([])
+      expect(Rubikey).to receive(:show_passwords).with([], select_single: true)
 
       Rubikey.main_menu
     end
@@ -181,6 +181,22 @@ RSpec.describe Rubikey do
       expect { Rubikey.show_passwords(password_manager.all_passwords) }.to output(
         a_string_including('example.com', 'alice', 'Password: ', 'secret')
       ).to_stdout
+    ensure
+      password_manager&.close
+    end
+
+    it 'reveals the only search result without asking for its ID' do
+      password_manager = PasswordManager.new(master_password: 'masterPassword', new_password: true)
+      Rubikey.instance_variable_set(:@password_manager, password_manager)
+      password = Password.new(website: 'example.com', username: 'alice')
+      password.update_password('secret', 'masterPassword')
+      password_manager.add_password(password)
+      allow(Rubikey::Terminal).to receive(:prompt).and_return('q')
+
+      expect do
+        Rubikey.show_passwords(password_manager.all_passwords, select_single: true)
+      end.to output(a_string_including('Password: ', 'secret')).to_stdout
+      expect(Rubikey::Terminal).to have_received(:prompt).with(*Rubikey::Dialogue.password_revealed_prompt)
     ensure
       password_manager&.close
     end
