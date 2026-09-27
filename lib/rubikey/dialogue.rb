@@ -72,7 +72,8 @@ module Rubikey
         TextColor::GREEN + "1. New password\n",
         TextColor::GREEN + "2. Show passwords\n",
         TextColor::GREEN + "3. Search\n",
-        TextColor::GREEN + "4. Options\n",
+        TextColor::GREEN + "4. Delete\n",
+        TextColor::GREEN + "5. Options\n",
         TextColor::RED + "q. Quit\n\n",
         TextColor::YELLOW + TextColor::BOLD + 'Select an option:'
       ]
