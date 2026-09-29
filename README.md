@@ -8,6 +8,7 @@ Text-based local password manager built in Ruby, allowing for secure password ge
 
 ## How to use `Rubikey`
 * bundle exec ruby bin/rubikey
+* There is also a bat file included that may work for your setup.
 
 ## How to run tests for `Rubikey`
 * bundle exec rspec
